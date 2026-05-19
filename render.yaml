@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: quiz-aws
+    env: node
+    buildCommand: cd aws-genie-herbe/server && npm install
+    startCommand: cd aws-genie-herbe/server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production

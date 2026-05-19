@@ -1,0 +1,97 @@
+═══════════════════════════════════════════════════════════
+  🚀 DÉPLOIEMENT RAPIDE AVEC NGROK (5 MINUTES)
+═══════════════════════════════════════════════════════════
+
+Ngrok permet de rendre votre serveur local accessible sur Internet
+en créant un tunnel sécurisé. Parfait pour tester rapidement !
+
+
+📦 ÉTAPE 1 : TÉLÉCHARGER NGROK
+────────────────────────────────────────────────────────────
+1. Aller sur : https://ngrok.com/download
+2. Télécharger la version Windows
+3. Extraire ngrok.exe dans un dossier (ex: C:\ngrok)
+4. Créer un compte gratuit sur ngrok.com
+
+
+🔑 ÉTAPE 2 : CONFIGURER NGROK
+────────────────────────────────────────────────────────────
+1. Copier votre "authtoken" depuis https://dashboard.ngrok.com/get-started/your-authtoken
+2. Ouvrir PowerShell et taper :
+   
+   C:\ngrok\ngrok.exe config add-authtoken VOTRE_TOKEN_ICI
+
+
+🚀 ÉTAPE 3 : DÉMARRER LE SERVEUR LOCAL
+────────────────────────────────────────────────────────────
+1. Ouvrir PowerShell dans le dossier du projet :
+   cd C:\Users\...\aws-genie-herbe\server
+
+2. Démarrer le serveur :
+   npm start
+
+3. Laisser cette fenêtre ouverte
+
+
+🌐 ÉTAPE 4 : CRÉER LE TUNNEL NGROK
+────────────────────────────────────────────────────────────
+1. Ouvrir UNE NOUVELLE fenêtre PowerShell
+
+2. Lancer ngrok :
+   C:\ngrok\ngrok.exe http 3000
+
+3. Ngrok affiche quelque chose comme :
+   
+   Forwarding  https://abc123xyz.ngrok-free.app -> http://localhost:3000
+   
+   ⚠️ COPIEZ cette URL (elle change à chaque fois) !
+
+
+🎮 ÉTAPE 5 : PARTAGER LES LIENS
+────────────────────────────────────────────────────────────
+Remplacez "abc123xyz.ngrok-free.app" par VOTRE URL ngrok :
+
+📺 ANIMATEUR :
+   https://abc123xyz.ngrok-free.app/host.html
+
+🔵 ÉQUIPE 1 :
+   https://abc123xyz.ngrok-free.app/client.html?team=1
+
+🔴 ÉQUIPE 2 :
+   https://abc123xyz.ngrok-free.app/client.html?team=2
+
+💡 Partagez ces liens par email, WhatsApp, etc.
+   N'importe qui avec le lien peut se connecter !
+
+
+⚠️ LIMITATIONS VERSION GRATUITE
+────────────────────────────────────────────────────────────
+❌ L'URL change à chaque redémarrage de ngrok
+❌ Limite de 40 connexions/minute
+❌ Bannière "ngrok" affichée sur la page
+✅ Parfait pour des tests et formations
+
+
+🔧 COMMANDES UTILES
+────────────────────────────────────────────────────────────
+Arrêter ngrok :
+   Ctrl + C dans la fenêtre ngrok
+
+Arrêter le serveur :
+   Ctrl + C dans la fenêtre du serveur
+
+Relancer :
+   1. npm start (dans le dossier server)
+   2. ngrok http 3000 (dans une autre fenêtre)
+
+
+💡 ASTUCE PRO
+────────────────────────────────────────────────────────────
+Pour garder la même URL à chaque fois :
+→ Passer à ngrok Pro (8$/mois)
+→ Vous aurez un domaine fixe : https://votrenom.ngrok.io
+
+
+═══════════════════════════════════════════════════════════
+  Questions ? Lisez DEPLOIEMENT.md pour d'autres options
+═══════════════════════════════════════════════════════════

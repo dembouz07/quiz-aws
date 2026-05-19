@@ -1,0 +1,265 @@
+﻿<script>
+const QUESTIONS = [
+  {c:"Compute",q:"Quel service AWS permet de lancer des serveurs virtuels dans le cloud ?",a:["Amazon EC2","Amazon S3","AWS Lambda","Amazon RDS"],r:0,e:"Amazon EC2 (Elastic Compute Cloud) fournit des serveurs virtuels redimensionnables dans le cloud AWS."},
+  {c:"Compute",q:"Que signifie EC2 dans AWS ?",a:["Elastic Compute Cloud","Extended Cloud Computing","Enterprise Cloud Center","Elastic Container Cloud"],r:0,e:"EC2 = Elastic Compute Cloud."},
+  {c:"Compute",q:"Quel service AWS permet de deployer des applications sans gerer de serveurs ?",a:["Amazon EC2","AWS Elastic Beanstalk","AWS Lambda","Amazon ECS"],r:2,e:"AWS Lambda est un service serverless."},
+  {c:"Compute",q:"Duree maximale d execution d une fonction AWS Lambda ?",a:["5 minutes","10 minutes","15 minutes","30 minutes"],r:2,e:"Une fonction Lambda peut s executer au maximum 15 minutes."},
+  {c:"Compute",q:"Quel service AWS est le service manage de Kubernetes ?",a:["Amazon ECS","AWS Fargate","Amazon EKS","AWS App Runner"],r:2,e:"Amazon EKS (Elastic Kubernetes Service) est le service Kubernetes manage d AWS."},
+  {c:"Compute",q:"Quel service AWS execute des conteneurs Docker sans gerer de serveurs ?",a:["Amazon ECS","Amazon EKS","AWS Fargate","Amazon ECR"],r:2,e:"AWS Fargate est un moteur de calcul serverless pour conteneurs."},
+  {c:"Compute",q:"Qu est-ce qu une region AWS ?",a:["Un datacenter unique","Une zone geo avec plusieurs AZ","Un groupe de serveurs","Un service de replication"],r:1,e:"Une region AWS est une zone geographique contenant plusieurs zones de disponibilite."},
+  {c:"Stockage",q:"Quel service AWS offre un stockage d objets hautement disponible ?",a:["Amazon EBS","Amazon S3","Amazon EFS","AWS Storage Gateway"],r:1,e:"Amazon S3 (Simple Storage Service) est le service de stockage d objets d AWS."},
+  {c:"Stockage",q:"Que signifie S3 dans Amazon S3 ?",a:["Simple Storage Service","Secure Server Storage","Scalable Storage System","Standard Storage Solution"],r:0,e:"S3 = Simple Storage Service."},
+  {c:"Stockage",q:"Quelle classe S3 est la moins chere pour des donnees rarement accedees ?",a:["S3 Standard","S3 Intelligent-Tiering","S3 Glacier Deep Archive","S3 Standard-IA"],r:2,e:"S3 Glacier Deep Archive est la classe la moins chere, ideale pour l archivage long terme."},
+  {c:"Stockage",q:"Quel service AWS fournit un stockage par blocs pour les instances EC2 ?",a:["Amazon S3","Amazon EFS","Amazon EBS","AWS Storage Gateway"],r:2,e:"Amazon EBS (Elastic Block Store) fournit des volumes de stockage par blocs pour EC2."},
+  {c:"Stockage",q:"Quel service AWS offre un systeme de fichiers NFS partage ?",a:["Amazon EBS","Amazon S3","Amazon EFS","Amazon FSx"],r:2,e:"Amazon EFS (Elastic File System) est un systeme de fichiers NFS manage."},
+  {c:"Stockage",q:"Quelle est la durabilite garantie par Amazon S3 ?",a:["99,9%","99,99%","99,999%","99,999999999% (11 neuf)"],r:3,e:"Amazon S3 garantit une durabilite de 99,999999999% (11 neuf)."},
+  {c:"Base de donnees",q:"Quel service AWS est une base de donnees relationnelle managee ?",a:["Amazon DynamoDB","Amazon RDS","Amazon Redshift","Amazon ElastiCache"],r:1,e:"Amazon RDS (Relational Database Service) gere des bases relationnelles."},
+  {c:"Base de donnees",q:"Quel service AWS est une base NoSQL cle-valeur entierement managee ?",a:["Amazon RDS","Amazon Aurora","Amazon DynamoDB","Amazon DocumentDB"],r:2,e:"Amazon DynamoDB est une base NoSQL serverless avec des performances en millisecondes."},
+  {c:"Base de donnees",q:"Quel service AWS est compatible MySQL/PostgreSQL avec des performances 5x superieures ?",a:["Amazon RDS","Amazon Aurora","Amazon Redshift","Amazon Neptune"],r:1,e:"Amazon Aurora est une base relationnelle cloud-native, jusqu a 5x plus rapide que MySQL."},
+  {c:"Base de donnees",q:"Quel service AWS est un entrepot de donnees pour l analytique ?",a:["Amazon RDS","Amazon DynamoDB","Amazon Redshift","Amazon Aurora"],r:2,e:"Amazon Redshift est le service d entrepot de donnees d AWS."},
+  {c:"Base de donnees",q:"Quel service AWS permet de mettre en cache des donnees en memoire ?",a:["Amazon RDS","Amazon ElastiCache","Amazon DAX","Amazon MemoryDB"],r:1,e:"Amazon ElastiCache est un service de cache en memoire manage, compatible Redis et Memcached."},
+  {c:"Reseau",q:"Quel service AWS permet de creer un reseau prive virtuel isole dans le cloud ?",a:["AWS Direct Connect","Amazon VPC","Amazon Route 53","AWS Transit Gateway"],r:1,e:"Amazon VPC (Virtual Private Cloud) permet de creer un reseau logiquement isole dans AWS."},
+  {c:"Reseau",q:"Quel service AWS est le service DNS manage d Amazon ?",a:["Amazon CloudFront","AWS Global Accelerator","Amazon Route 53","AWS PrivateLink"],r:2,e:"Amazon Route 53 est le service DNS hautement disponible et scalable d AWS."},
+  {c:"Reseau",q:"Quel service AWS est un CDN mondial ?",a:["Amazon Route 53","Amazon CloudFront","AWS Global Accelerator","Amazon API Gateway"],r:1,e:"Amazon CloudFront est le CDN d AWS, distribuant le contenu via un reseau mondial."},
+  {c:"Reseau",q:"Quel service AWS distribue le trafic entrant entre plusieurs instances EC2 ?",a:["Amazon Route 53","AWS Auto Scaling","Elastic Load Balancing","Amazon CloudFront"],r:2,e:"Elastic Load Balancing (ELB) repartit automatiquement le trafic entrant entre plusieurs cibles."},
+  {c:"Securite",q:"Quel service AWS gere les identites, utilisateurs et permissions d acces ?",a:["AWS Shield","AWS WAF","AWS IAM","Amazon Cognito"],r:2,e:"AWS IAM (Identity and Access Management) controle l acces aux services et ressources AWS."},
+  {c:"Securite",q:"Quel service AWS protege contre les attaques DDoS ?",a:["AWS WAF","AWS Shield","Amazon GuardDuty","AWS Firewall Manager"],r:1,e:"AWS Shield est un service de protection DDoS manage."},
+  {c:"Securite",q:"Quel service AWS est un pare-feu applicatif web ?",a:["AWS Shield","AWS WAF","Amazon Inspector","AWS Network Firewall"],r:1,e:"AWS WAF (Web Application Firewall) protege les applications web contre les exploits courants."},
+  {c:"Securite",q:"Quel service AWS detecte les menaces en analysant les logs CloudTrail et VPC Flow ?",a:["Amazon Inspector","AWS Security Hub","Amazon GuardDuty","Amazon Macie"],r:2,e:"Amazon GuardDuty est un service de detection des menaces qui analyse les logs en continu."},
+  {c:"Securite",q:"Quel service AWS gere les cles de chiffrement pour proteger vos donnees ?",a:["AWS Secrets Manager","AWS Certificate Manager","AWS KMS","AWS CloudHSM"],r:2,e:"AWS KMS (Key Management Service) cree et controle les cles de chiffrement."},
+  {c:"Securite",q:"Quel est le modele de responsabilite partagee d AWS ?",a:["AWS est responsable de tout","Le client est responsable de tout","AWS securise le cloud, le client securise dans le cloud","Partage 50/50"],r:2,e:"AWS securise l infrastructure, le client securise ses donnees et applications."},
+  {c:"Serverless",q:"Quel service AWS permet de creer et gerer des APIs REST et WebSocket ?",a:["AWS AppSync","Amazon API Gateway","AWS App Runner","Amazon CloudFront"],r:1,e:"Amazon API Gateway permet de creer, deployer et gerer des APIs a n importe quelle echelle."},
+  {c:"Serverless",q:"Quel service AWS orchestre des fonctions Lambda en workflows visuels ?",a:["Amazon SWF","AWS Step Functions","Amazon EventBridge","AWS Batch"],r:1,e:"AWS Step Functions orchestre des workflows d applications en coordonnant des services AWS."},
+  {c:"Messagerie",q:"Quel service AWS est un service de file d attente de messages manage ?",a:["Amazon SNS","Amazon SQS","Amazon MQ","Amazon Kinesis"],r:1,e:"Amazon SQS (Simple Queue Service) est un service de file d attente de messages scalable."},
+  {c:"Messagerie",q:"Quel service AWS permet d envoyer des notifications push, SMS et emails ?",a:["Amazon SQS","Amazon SES","Amazon SNS","Amazon Pinpoint"],r:2,e:"Amazon SNS (Simple Notification Service) est un service de messagerie pub/sub."},
+  {c:"Messagerie",q:"Quel service AWS permet d envoyer des emails transactionnels a grande echelle ?",a:["Amazon SNS","Amazon SES","Amazon Pinpoint","Amazon WorkMail"],r:1,e:"Amazon SES (Simple Email Service) est un service d envoi d emails economique et scalable."},
+  {c:"Machine Learning",q:"Quel service AWS est la plateforme complete de Machine Learning d AWS ?",a:["Amazon Rekognition","Amazon SageMaker","AWS DeepLens","Amazon Comprehend"],r:1,e:"Amazon SageMaker est la plateforme ML complete d AWS pour construire, entrainer et deployer des modeles."},
+  {c:"Machine Learning",q:"Quel service AWS permet d analyser des images et des videos avec l IA ?",a:["Amazon Comprehend","Amazon Transcribe","Amazon Rekognition","Amazon Textract"],r:2,e:"Amazon Rekognition analyse des images et videos pour detecter des objets, visages et texte."},
+  {c:"Machine Learning",q:"Quel service AWS convertit la parole en texte (speech-to-text) ?",a:["Amazon Polly","Amazon Transcribe","Amazon Translate","Amazon Lex"],r:1,e:"Amazon Transcribe est le service de reconnaissance vocale automatique d AWS."},
+  {c:"Machine Learning",q:"Quel service AWS convertit du texte en parole (text-to-speech) ?",a:["Amazon Transcribe","Amazon Lex","Amazon Polly","Amazon Comprehend"],r:2,e:"Amazon Polly convertit du texte en parole naturelle dans de nombreuses langues."},
+  {c:"DevOps",q:"Quel service AWS permet de definir l infrastructure en tant que code (IaC) ?",a:["AWS CodeDeploy","AWS CloudFormation","AWS OpsWorks","AWS Systems Manager"],r:1,e:"AWS CloudFormation permet de modeliser et provisionner l infrastructure AWS via des templates."},
+  {c:"DevOps",q:"Quel service AWS surveille les metriques, logs et alarmes de vos ressources ?",a:["AWS CloudTrail","AWS Config","Amazon CloudWatch","AWS X-Ray"],r:2,e:"Amazon CloudWatch collecte et surveille les metriques, logs et evenements des ressources AWS."},
+  {c:"DevOps",q:"Quel service AWS enregistre toutes les actions effectuees sur votre compte AWS ?",a:["Amazon CloudWatch","AWS Config","AWS CloudTrail","Amazon GuardDuty"],r:2,e:"AWS CloudTrail enregistre l historique des appels API AWS pour l audit et la conformite."},
+  {c:"DevOps",q:"Quel service AWS est un registre de conteneurs Docker manage ?",a:["Amazon ECS","Amazon EKS","Amazon ECR","AWS Fargate"],r:2,e:"Amazon ECR (Elastic Container Registry) est un registre Docker manage pour stocker des images."},
+  {c:"Analytics",q:"Quel service AWS permet d analyser des donnees dans S3 avec du SQL sans serveur ?",a:["Amazon Redshift","Amazon EMR","Amazon Athena","AWS Glue"],r:2,e:"Amazon Athena est un service de requetes interactives serverless qui analyse les donnees dans S3 avec SQL."},
+  {c:"Analytics",q:"Quel service AWS est un service ETL serverless ?",a:["Amazon EMR","AWS Glue","Amazon Kinesis","Amazon Athena"],r:1,e:"AWS Glue est un service ETL serverless qui prepare et transforme les donnees pour l analytique."},
+  {c:"Analytics",q:"Quel service AWS permet de traiter des flux de donnees en temps reel ?",a:["Amazon SQS","Amazon Kinesis","AWS Glue","Amazon EMR"],r:1,e:"Amazon Kinesis permet de collecter, traiter et analyser des flux de donnees en temps reel."},
+  {c:"Analytics",q:"Quel service AWS est un service de Business Intelligence pour creer des tableaux de bord ?",a:["Amazon Athena","Amazon Redshift","Amazon QuickSight","AWS Glue"],r:2,e:"Amazon QuickSight est le service de Business Intelligence d AWS pour creer des visualisations."}
+];
+
+// ── ETAT ──────────────────────────────────────────────────────
+const G = {
+  t1:{name:"",pts:0,correct:0,wrong:0},
+  t2:{name:"",pts:0,correct:0,wrong:0},
+  questions:[],
+  idx:0,
+  total:10,
+  timePerQ:20,
+  timeLeft:20,
+  timer:null,
+  buzzed:0,
+  answered:false,
+  totalCorrect:0,
+  totalAnswered:0,
+  lastCat:"all"
+};
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b;}
+function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
+function $(id){return document.getElementById(id);}
+
+function startGame(){
+  G.t1.name=$("team1Name").value.trim()||"Equipe 1";
+  G.t2.name=$("team2Name").value.trim()||"Equipe 2";
+  G.t1.pts=G.t1.correct=G.t1.wrong=0;
+  G.t2.pts=G.t2.correct=G.t2.wrong=0;
+  G.total=parseInt($("numQuestions").value);
+  G.timePerQ=parseInt($("timePerQ").value);
+  G.totalCorrect=G.totalAnswered=0;
+  G.lastCat=$("categoryFilter").value;
+  let pool=G.lastCat==="all"?QUESTIONS:QUESTIONS.filter(q=>q.c===G.lastCat);
+  if(pool.length<G.total){const extra=shuffle(QUESTIONS.filter(q=>q.c!==G.lastCat));pool=[...shuffle(pool),...extra];}
+  G.questions=shuffle(pool).slice(0,G.total);
+  G.idx=0;
+  $("displayName1").textContent=G.t1.name;
+  $("displayName2").textContent=G.t2.name;
+  showScreen("game");
+  loadQ();
+}
+
+function loadQ(){
+  if(G.idx>=G.questions.length){endGame();return;}
+  const q=G.questions[G.idx];
+  G.buzzed=0;G.answered=false;
+  $("categoryBadge").textContent=q.c;
+  $("questionText").textContent=q.q;
+  $("progressBar").style.width=((G.idx/G.total)*100)+"%";
+  $("progressLabel").textContent="Question "+(G.idx+1)+" / "+G.total;
+  const letters=["A","B","C","D"];
+  const order=shuffle([0,1,2,3]);
+  for(let i=0;i<4;i++){
+    const btn=$("ans"+i);
+    btn.dataset.orig=order[i];
+    btn.querySelector(".answer-letter").textContent=letters[i];
+    btn.querySelector(".answer-text").textContent=q.a[order[i]];
+    btn.className="answer-btn";
+    btn.disabled=false;
+  }
+  $("buzzerZone").className="buzzer-zone waiting";
+  $("buzzerStatus").className="buzzer-status";
+  $("buzzerStatus").textContent="Appuyez sur Q ou P pour buzzer !";
+  $("buzzerActions").style.display="none";
+  $("explanationBox").className="explanation-box";
+  $("nextBtn").className="btn-next";
+  $("scoreCard1").classList.remove("buzzed");
+  $("scoreCard2").classList.remove("buzzed");
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(G.timer);
+  G.timeLeft=G.timePerQ;
+  updateTimer();
+  G.timer=setInterval(()=>{G.timeLeft--;updateTimer();if(G.timeLeft<=0){clearInterval(G.timer);timeUp();}},1000);
+}
+
+function updateTimer(){
+  const t=G.timeLeft,max=G.timePerQ;
+  $("timerText").textContent=t;
+  const r=30,circ=2*Math.PI*r;
+  const prog=$("timerCircle");
+  prog.style.strokeDasharray=circ;
+  prog.style.strokeDashoffset=circ*(1-t/max);
+  const ratio=t/max;
+  prog.style.stroke=ratio>0.5?"#22c55e":ratio>0.25?"#f59e0b":"#ef4444";
+}
+
+function timeUp(){
+  if(G.answered)return;
+  G.answered=true;
+  revealAnswer();
+  $("buzzerZone").className="buzzer-zone";
+  $("buzzerStatus").textContent="Temps ecoule ! Aucun point.";
+  $("buzzerActions").style.display="none";
+  $("explanationBox").className="explanation-box show";
+  $("explanationText").textContent=G.questions[G.idx].e;
+  $("nextBtn").className="btn-next show";
+}
+
+document.addEventListener("keydown",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="q"&&!G.buzzed&&!G.answered)buzz(1);
+  else if(k==="p"&&!G.buzzed&&!G.answered)buzz(2);
+});
+
+function buzz(team){
+  G.buzzed=team;
+  clearInterval(G.timer);
+  const name=team===1?G.t1.name:G.t2.name;
+  $("buzzerZone").className="buzzer-zone buzzed-t"+(team===1?"1":"2");
+  $("buzzerStatus").className="buzzer-status active"+(team===2?"-t2":"");
+  $("buzzerStatus").textContent=name+" a buzze !";
+  $("buzzerActions").style.display="flex";
+  $("scoreCard1").classList.remove("buzzed");
+  $("scoreCard2").classList.remove("buzzed");
+  $("scoreCard"+team).classList.add("buzzed");
+  playBuzz(team);
+}
+
+function selectAnswer(btnIdx){
+  if(G.answered)return;
+  const orig=parseInt($("ans"+btnIdx).dataset.orig);
+  const correct=orig===G.questions[G.idx].r;
+  if(G.buzzed){judgeAnswer(correct,btnIdx);}
+  else{
+    G.buzzed=0;
+    judgeAnswer(correct,btnIdx);
+  }
+}
+
+function judgeAnswer(correct,btnIdx){
+  if(G.answered)return;
+  G.answered=true;
+  clearInterval(G.timer);
+  G.totalAnswered++;
+  revealAnswer(btnIdx);
+  if(correct){
+    G.totalCorrect++;
+    if(G.buzzed===1){G.t1.pts+=2;G.t1.correct++;showFeedback(true,G.t1.name);}
+    else if(G.buzzed===2){G.t2.pts+=2;G.t2.correct++;showFeedback(true,G.t2.name);}
+    else showFeedback(true,"");
+    playCorrect();
+  }else{
+    if(G.buzzed===1){G.t1.pts=Math.max(0,G.t1.pts-1);G.t1.wrong++;showFeedback(false,G.t1.name);}
+    else if(G.buzzed===2){G.t2.pts=Math.max(0,G.t2.pts-1);G.t2.wrong++;showFeedback(false,G.t2.name);}
+    else showFeedback(false,"");
+    playWrong();
+  }
+  $("score1").textContent=G.t1.pts;
+  $("score2").textContent=G.t2.pts;
+  $("scoreCard1").classList.remove("buzzed");
+  $("scoreCard2").classList.remove("buzzed");
+  $("buzzerZone").className="buzzer-zone";
+  $("buzzerActions").style.display="none";
+  $("explanationBox").className="explanation-box show";
+  $("explanationText").textContent=G.questions[G.idx].e;
+  $("nextBtn").className="btn-next show";
+}
+
+function revealAnswer(selectedBtnIdx){
+  const correctOrig=G.questions[G.idx].r;
+  for(let i=0;i<4;i++){
+    const btn=$("ans"+i);
+    btn.disabled=true;
+    if(parseInt(btn.dataset.orig)===correctOrig)btn.classList.add("correct");
+    else if(i===selectedBtnIdx)btn.classList.add("wrong");
+  }
+}
+
+function showFeedback(correct,teamName){
+  const ov=$("feedbackOverlay"),bb=$("feedbackBubble");
+  $("fbIcon").textContent=correct?"✅":"❌";
+  $("fbText").textContent=correct?(teamName?"+2 pts pour "+teamName+" !":"Bonne reponse !"):(teamName?"-1 pt pour "+teamName:"Mauvaise reponse !");
+  bb.className="feedback-bubble "+(correct?"correct-fb":"wrong-fb");
+  ov.className="feedback-overlay show";
+  setTimeout(()=>{ov.className="feedback-overlay";},1500);
+}
+
+function nextQuestion(){G.idx++;loadQ();}
+
+function endGame(){
+  clearInterval(G.timer);
+  $("resultName1").textContent=G.t1.name;
+  $("resultName2").textContent=G.t2.name;
+  $("resultScore1").textContent=G.t1.pts;
+  $("resultScore2").textContent=G.t2.pts;
+  $("statTotal").textContent=G.totalAnswered;
+  $("statCorrect").textContent=G.totalCorrect;
+  $("statAccuracy").textContent=G.totalAnswered>0?Math.round(G.totalCorrect/G.totalAnswered*100)+"%":"0%";
+  if(G.t1.pts>G.t2.pts){
+    $("winnerName").textContent=G.t1.name;
+    $("winnerScore").textContent=G.t1.pts+" pts vs "+G.t2.pts+" pts";
+    $("resultCard1").classList.add("winner-card");
+    $("resultCard2").classList.remove("winner-card");
+  }else if(G.t2.pts>G.t1.pts){
+    $("winnerName").textContent=G.t2.name;
+    $("winnerScore").textContent=G.t2.pts+" pts vs "+G.t1.pts+" pts";
+    $("resultCard2").classList.add("winner-card");
+    $("resultCard1").classList.remove("winner-card");
+  }else{
+    $("winnerName").textContent="Egalite !";
+    $("winnerScore").textContent=G.t1.pts+" pts chacun";
+    $("resultCard1").classList.remove("winner-card");
+    $("resultCard2").classList.remove("winner-card");
+  }
+  showScreen("results");
+}
+
+function restartGame(){showScreen("home");}
+
+function playBuzz(t){try{const c=new AudioContext(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=t===1?440:330;o.type="square";g.gain.setValueAtTime(0.3,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.3);o.start();o.stop(c.currentTime+0.3);}catch(e){}}
+function playCorrect(){try{const c=new AudioContext();[523,659,784].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;o.type="sine";g.gain.setValueAtTime(0.2,c.currentTime+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+i*0.1+0.2);o.start(c.currentTime+i*0.1);o.stop(c.currentTime+i*0.1+0.2);});}catch(e){}}
+function playWrong(){try{const c=new AudioContext(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=200;o.type="sawtooth";g.gain.setValueAtTime(0.3,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.5);o.start();o.stop(c.currentTime+0.5);}catch(e){}}
+</script>
+</body>
+</html>

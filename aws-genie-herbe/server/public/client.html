@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Quiz - Équipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --neon-orange:#ff6b00;--neon-blue:#00d4ff;--neon-green:#00ff88;--neon-red:#ff2244;
+  --bg:#050a14;--bg2:#0a1628;--bg3:#0f2040;
+  --text:#e8f4ff;--text-muted:#6a8aaa;
+  --glow-o:0 0 20px #ff6b00,0 0 40px #ff6b0066;
+  --glow-b:0 0 20px #00d4ff,0 0 40px #00d4ff66;
+}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,#0a1f3a 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,#0d1f35 0%,transparent 50%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 10% 15%,#ffffff33 0%,transparent 100%),radial-gradient(1px 1px at 30% 40%,#ffffff22 0%,transparent 100%),radial-gradient(1px 1px at 50% 10%,#ffffff44 0%,transparent 100%),radial-gradient(1px 1px at 70% 60%,#ffffff22 0%,transparent 100%),radial-gradient(1px 1px at 90% 30%,#ffffff33 0%,transparent 100%);pointer-events:none;z-index:0}
+
+.container{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;padding:1rem}
+
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.team-badge{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+.team1{color:var(--neon-orange);text-shadow:var(--glow-o)}
+.team2{color:var(--neon-blue);text-shadow:var(--glow-b)}
+.connection-status{padding:0.5rem 1rem;border-radius:8px;font-size:0.8rem;font-weight:700;letter-spacing:1px}
+.connected{background:rgba(0,255,136,0.2);border:1px solid #00ff88;color:#00ff88}
+.disconnected{background:rgba(255,34,68,0.2);border:1px solid #ff2244;color:#ff2244}
+
+.game-info{text-align:center;margin-bottom:1.5rem}
+.question-counter{font-family:'Orbitron',monospace;font-size:0.9rem;color:var(--text-muted);letter-spacing:2px;margin-bottom:0.5rem}
+.category-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--neon-blue);font-size:0.75rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:99px;text-transform:uppercase;letter-spacing:1px;text-shadow:var(--glow-b)}
+
+.scores-display{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:0.8rem;padding:0.6rem 1rem;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:12px}
+.score-item{display:flex;flex-direction:column;align-items:center;gap:0.2rem}
+.score-team-name{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)}
+.score-item.team1 .score-team-name{color:var(--neon-orange)}
+.score-item.team2 .score-team-name{color:var(--neon-blue)}
+.score-value{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;line-height:1}
+.score-item.team1 .score-value{color:var(--neon-orange);text-shadow:var(--glow-o)}
+.score-item.team2 .score-value{color:var(--neon-blue);text-shadow:var(--glow-b)}
+.score-separator{font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:900;color:var(--text-muted);letter-spacing:2px}
+
+.question-section{flex:1;display:flex;flex-direction:column;gap:1rem;max-width:800px;margin:0 auto;width:100%}
+.question-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;min-height:120px;display:flex;align-items:center;justify-content:center}
+.question-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-orange),var(--neon-blue))}
+.question-text{font-size:clamp(1.1rem,2.5vw,1.4rem);font-weight:700;line-height:1.4;color:var(--text);text-align:center}
+.question-hidden{color:var(--text-muted);font-style:italic}
+
+.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.5rem}
+.answer-btn{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:2px solid #1a3a5c;border-radius:12px;color:var(--text);padding:0.9rem 1rem;font-size:0.95rem;font-weight:600;font-family:'Exo 2',sans-serif;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:0.75rem;line-height:1.3;position:relative;overflow:hidden;opacity:1;transform:translateY(0)}
+.answer-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.03) 50%,transparent 70%);transform:translateX(-100%);transition:transform 0.3s}
+.answer-btn:hover:not(:disabled)::before{transform:translateX(100%)}
+.answer-btn:hover:not(:disabled){border-color:var(--neon-orange);background:linear-gradient(135deg,rgba(255,107,0,0.1),var(--bg3));transform:translateY(-2px);box-shadow:0 4px 20px rgba(255,107,0,0.2)}
+.answer-btn:disabled{cursor:default}
+.answer-btn.correct{border-color:var(--neon-green);background:linear-gradient(135deg,rgba(0,255,136,0.12),var(--bg3));box-shadow:0 0 20px var(--neon-green);animation:correctPulse 0.6s ease-out}
+.answer-btn.correct .answer-letter{background:var(--neon-green);color:#000;border-color:var(--neon-green);box-shadow:0 0 10px var(--neon-green)}
+.answer-btn.wrong{border-color:var(--neon-red);background:linear-gradient(135deg,rgba(255,34,68,0.12),var(--bg3));box-shadow:0 0 20px var(--neon-red);animation:wrongShake 0.6s ease-out}
+.answer-btn.wrong .answer-letter{background:var(--neon-red);color:#fff;border-color:var(--neon-red)}
+.answer-btn.selected{border-color:var(--neon-orange);background:linear-gradient(135deg,rgba(255,107,0,0.2),var(--bg3));box-shadow:0 0 30px var(--neon-orange);animation:selectedGlow 0.4s ease-out}
+.answer-btn.selected .answer-letter{background:var(--neon-orange);color:#000;border-color:var(--neon-orange);box-shadow:0 0 15px var(--neon-orange)}
+
+@keyframes correctPulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes selectedGlow{0%{box-shadow:0 0 10px var(--neon-orange)}100%{box-shadow:0 0 30px var(--neon-orange)}}
+.answer-letter{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--bg);border:1px solid #1a3a5c;border-radius:6px;font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:900;color:var(--text-muted)}
+
+.buzzer-section{text-align:center}
+.status-text{font-size:1rem;color:var(--text-muted);margin-bottom:1.5rem;letter-spacing:2px;font-family:'Orbitron',monospace}
+.buzzer{width:200px;height:200px;margin:0 auto;border-radius:50%;border:6px solid;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;transition:all 0.2s;position:relative;overflow:hidden}
+.buzzer::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:0;transition:opacity 0.3s}
+.buzzer.team1{border-color:var(--neon-orange);background:linear-gradient(135deg,rgba(255,107,0,0.2),rgba(255,107,0,0.05));color:var(--neon-orange)}
+.buzzer.team2{border-color:var(--neon-blue);background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,212,255,0.05));color:var(--neon-blue)}
+.buzzer.disabled{opacity:0.3;cursor:not-allowed;border-color:#333;color:#666}
+.buzzer.active:not(.disabled):hover{transform:scale(1.05)}
+.buzzer.active:not(.disabled):active{transform:scale(0.95)}
+.buzzer.team1.active:not(.disabled):hover::before{opacity:1;background:radial-gradient(circle,rgba(255,107,0,0.3),transparent 70%)}
+.buzzer.team2.active:not(.disabled):hover::before{opacity:1;background:radial-gradient(circle,rgba(0,212,255,0.3),transparent 70%)}
+.buzzer.buzzed{animation:pulse 0.8s ease-in-out;transform:scale(1.1)}
+@keyframes pulse{0%,100%{box-shadow:0 0 40px currentColor}50%{box-shadow:0 0 80px currentColor,inset 0 0 40px currentColor}}
+.buzzer.team1.buzzed{box-shadow:0 0 80px var(--neon-orange),inset 0 0 40px var(--neon-orange)}
+.buzzer.team2.buzzed{box-shadow:0 0 80px var(--neon-blue),inset 0 0 40px var(--neon-blue)}
+
+.info-text{font-size:0.9rem;color:var(--text-muted);letter-spacing:1px;margin-top:1rem}
+
+.result-feedback{margin-top:1rem;padding:1rem;border-radius:12px;font-weight:700;text-align:center;display:none}
+.feedback-correct{background:rgba(0,255,136,0.15);border:1px solid var(--neon-green);color:var(--neon-green)}
+.feedback-wrong{background:rgba(255,34,68,0.15);border:1px solid var(--neon-red);color:var(--neon-red)}
+
+@media(max-width:600px){
+  .answers-grid{grid-template-columns:1fr}
+  .buzzer{width:150px;height:150px;font-size:1.5rem}
+  .question-text{font-size:1rem}
+}
+
+/* ===== ÉCRAN DE RÉSULTATS ===== */
+.results-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem}
+.results-container{width:100%;max-width:600px;text-align:center}
+
+.results-header{margin-bottom:2rem}
+.results-icon{font-size:4rem;margin-bottom:1rem;animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.results-title{font-family:'Orbitron',monospace;font-size:clamp(2rem,6vw,3rem);font-weight:900;text-transform:uppercase;letter-spacing:4px;background:linear-gradient(135deg,#ff6b00,#ffcc00,#ff6b00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite;background-size:200%;margin-bottom:0.5rem}
+.results-subtitle{color:var(--neon-blue);font-size:1rem;letter-spacing:3px;text-transform:uppercase;text-shadow:var(--glow-b)}
+
+.final-scores{display:flex;align-items:center;justify-content:center;gap:2rem;margin-bottom:2rem}
+.final-score-card{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:2px solid #1a3a5c;border-radius:20px;padding:1.5rem;min-width:150px;position:relative;overflow:hidden}
+.final-score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity 0.3s}
+.final-score-card.team1{border-color:var(--neon-orange)}
+.final-score-card.team1::before{background:var(--neon-orange);opacity:1}
+.final-score-card.team2{border-color:var(--neon-blue)}
+.final-score-card.team2::before{background:var(--neon-blue);opacity:1}
+.final-score-card.winner{transform:scale(1.1);box-shadow:0 0 30px currentColor}
+.final-team-name{font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem}
+.final-score-card.team1 .final-team-name{color:var(--neon-orange)}
+.final-score-card.team2 .final-team-name{color:var(--neon-blue)}
+.final-score-value{font-family:'Orbitron',monospace;font-size:3rem;font-weight:900;line-height:1;margin-bottom:0.2rem}
+.final-score-card.team1 .final-score-value{color:var(--neon-orange);text-shadow:var(--glow-o)}
+.final-score-card.team2 .final-score-value{color:var(--neon-blue);text-shadow:var(--glow-b)}
+.final-score-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.vs-separator{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--text-muted);letter-spacing:3px}
+
+.winner-announcement{margin-bottom:2rem;padding:1.5rem;background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,215,0,0.05));border:1px solid rgba(255,215,0,0.3);border-radius:16px}
+.winner-icon{font-size:2.5rem;margin-bottom:0.5rem}
+.winner-text{font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem}
+.winner-name{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;color:#ffd700;text-shadow:0 0 20px #ffd700;text-transform:uppercase;letter-spacing:2px}
+
+.results-stats{display:flex;justify-content:center;gap:3rem;margin-bottom:2rem}
+.stat-item{display:flex;flex-direction:column;align-items:center;gap:0.3rem}
+.stat-label{font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.stat-value{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--neon-green)}
+
+.results-message{font-size:1.1rem;color:var(--text-muted);line-height:1.5;font-style:italic}
+
+@media(max-width:600px){
+  .final-scores{flex-direction:column;gap:1rem}
+  .vs-separator{order:2}
+  .results-stats{flex-direction:column;gap:1rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="team-badge" id="teamBadge">ÉQUIPE</div>
+    <div class="connection-status disconnected" id="connStatus">DÉCONNECTÉ</div>
+  </div>
+
+  <div class="game-info">
+    <div class="question-counter" id="questionCounter">En attente...</div>
+    <div class="category-badge" id="categoryBadge" style="display:none">Compute</div>
+    
+    <!-- Tableau des scores -->
+    <div class="scores-display" id="scoresDisplay" style="display:none">
+      <div class="score-item team1">
+        <span class="score-team-name" id="scoreTeam1Name">Équipe 1</span>
+        <span class="score-value" id="scoreTeam1">0</span>
+      </div>
+      <div class="score-separator">VS</div>
+      <div class="score-item team2">
+        <span class="score-team-name" id="scoreTeam2Name">Équipe 2</span>
+        <span class="score-value" id="scoreTeam2">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-section">
+    <div class="question-box">
+      <div class="question-text question-hidden" id="questionText">En attente de la question...</div>
+    </div>
+
+    <div class="answers-grid" id="answersGrid" style="display:none">
+      <button class="answer-btn" id="ans0" onclick="selectAnswer(0)">
+        <span class="answer-letter">A</span><span class="answer-text" id="answerA">...</span>
+      </button>
+      <button class="answer-btn" id="ans1" onclick="selectAnswer(1)">
+        <span class="answer-letter">B</span><span class="answer-text" id="answerB">...</span>
+      </button>
+      <button class="answer-btn" id="ans2" onclick="selectAnswer(2)">
+        <span class="answer-letter">C</span><span class="answer-text" id="answerC">...</span>
+      </button>
+      <button class="answer-btn" id="ans3" onclick="selectAnswer(3)">
+        <span class="answer-letter">D</span><span class="answer-text" id="answerD">...</span>
+      </button>
+    </div>
+
+    <div class="buzzer-section">
+      <div class="status-text" id="statusText">Connexion au serveur...</div>
+      <div class="buzzer disabled" id="buzzer" onclick="buzz()">
+        <span id="buzzerText">BUZZER</span>
+      </div>
+      <div class="info-text" id="infoText">En attente...</div>
+      <div class="result-feedback" id="resultFeedback"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Écran de Résultats Finaux -->
+<div class="results-screen" id="resultsScreen" style="display:none">
+  <div class="results-container">
+    <div class="results-header">
+      <div class="results-icon">🏆</div>
+      <h1 class="results-title">RÉSULTATS FINAUX</h1>
+      <div class="results-subtitle">◆ FIN DE PARTIE ◆</div>
+    </div>
+
+    <div class="final-scores">
+      <div class="final-score-card team1" id="finalScoreCard1">
+        <div class="final-team-name" id="finalTeamName1">Équipe 1</div>
+        <div class="final-score-value" id="finalScoreValue1">0</div>
+        <div class="final-score-label">POINTS</div>
+      </div>
+      
+      <div class="vs-separator">VS</div>
+      
+      <div class="final-score-card team2" id="finalScoreCard2">
+        <div class="final-team-name" id="finalTeamName2">Équipe 2</div>
+        <div class="final-score-value" id="finalScoreValue2">0</div>
+        <div class="final-score-label">POINTS</div>
+      </div>
+    </div>
+
+    <div class="winner-announcement" id="winnerAnnouncement">
+      <div class="winner-icon" id="winnerIcon">👑</div>
+      <div class="winner-text" id="winnerText">VAINQUEUR</div>
+      <div class="winner-name" id="winnerName">Équipe Gagnante</div>
+    </div>
+
+    <div class="results-stats">
+      <div class="stat-item">
+        <span class="stat-label">Questions Totales</span>
+        <span class="stat-value" id="totalQuestions">15</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Votre Performance</span>
+        <span class="stat-value" id="teamPerformance">Excellent !</span>
+      </div>
+    </div>
+
+    <div class="results-message" id="resultsMessage">
+      Merci d'avoir participé au AWS Genius Quiz !
+    </div>
+  </div>
+</div>
+
+<script>
+const params=new URLSearchParams(window.location.search);
+const teamNum=parseInt(params.get('team'))||1;
+const teamName=params.get('name')||`Équipe ${teamNum}`;
+const teamClass='team'+teamNum;
+let ws,canAnswer=false,hasAnswered=false,currentQuestion=null;
+
+// Fonction pour mettre à jour l'affichage des scores
+function updateScores(scores) {
+  if (scores) {
+    document.getElementById('scoreTeam1').textContent = scores.team1 || 0;
+    document.getElementById('scoreTeam2').textContent = scores.team2 || 0;
+  }
+}
+
+document.getElementById('teamBadge').textContent=teamName.toUpperCase();
+document.getElementById('teamBadge').classList.add(teamClass);
+document.getElementById('buzzer').classList.add(teamClass);
+
+function connect(){
+  const protocol=window.location.protocol==='https:'?'wss:':'ws:';
+  const host=window.location.host;
+  ws=new WebSocket(protocol+'//'+host);
+  
+  ws.onopen=()=>{
+    console.log('Connecté au serveur');
+    document.getElementById('connStatus').textContent='CONNECTÉ';
+    document.getElementById('connStatus').className='connection-status connected';
+    document.getElementById('statusText').textContent='Connecté - En attente du début de partie';
+    ws.send(JSON.stringify({type:'registerTeam',team:teamNum}));
+  };
+  
+  ws.onmessage=(e)=>{
+    const data=JSON.parse(e.data);
+    handleMessage(data);
+  };
+  
+  ws.onclose=()=>{
+    console.log('Déconnecté');
+    document.getElementById('connStatus').textContent='DÉCONNECTÉ';
+    document.getElementById('connStatus').className='connection-status disconnected';
+    document.getElementById('statusText').textContent='Connexion perdue - Reconnexion...';
+    canBuzz=false;
+    document.getElementById('buzzer').classList.add('disabled');
+    setTimeout(connect,2000);
+  };
+  
+  ws.onerror=(err)=>{
+    console.error('Erreur WebSocket:',err);
+  };
+}
+
+function handleMessage(data){
+  switch(data.type){
+    case 'registered':
+      document.getElementById('statusText').textContent='Enregistré - En attente du début';
+      document.getElementById('infoText').textContent='Prêt à jouer !';
+      break;
+    case 'gameStarted':
+      document.getElementById('statusText').textContent='PARTIE EN COURS';
+      document.getElementById('infoText').textContent='Attendez la question...';
+      document.getElementById('resultFeedback').style.display='none';
+      
+      // Afficher le tableau des scores et mettre à jour les noms
+      document.getElementById('scoresDisplay').style.display='flex';
+      if (data.teams) {
+        document.getElementById('scoreTeam1Name').textContent = data.teams[1].name || 'Équipe 1';
+        document.getElementById('scoreTeam2Name').textContent = data.teams[2].name || 'Équipe 2';
+        document.getElementById('scoreTeam1').textContent = data.teams[1].score || 0;
+        document.getElementById('scoreTeam2').textContent = data.teams[2].score || 0;
+      }
+      break;
+    case 'showQuestion':
+      // Étape 1: Afficher seulement la question
+      canAnswer = false;
+      hasAnswered = false;
+      currentQuestion = { r: -1 }; // Temporaire, sera mis à jour avec startTimer
+      
+      document.getElementById('questionCounter').textContent='QUESTION '+((data.index||0)+1);
+      document.getElementById('categoryBadge').textContent=data.category;
+      document.getElementById('categoryBadge').style.display='inline-flex';
+      document.getElementById('questionText').textContent=data.question;
+      document.getElementById('questionText').className='question-text';
+      
+      // Masquer les réponses et réinitialiser
+      document.getElementById('answersGrid').style.display='none';
+      for(let i=0;i<4;i++){
+        const btn=document.getElementById('ans'+i);
+        const textSpan=btn.querySelector('.answer-text');
+        textSpan.textContent='...';
+        btn.className='answer-btn';
+        btn.disabled=true;
+        btn.style.display='block';
+      }
+      
+      document.getElementById('buzzer').style.display='none';
+      document.getElementById('statusText').textContent='📖 LECTURE DE LA QUESTION...';
+      document.getElementById('infoText').textContent='Écoutez attentivement la question';
+      document.getElementById('resultFeedback').style.display='none';
+      
+      // Son dramatique pour la question
+      playDramaticSound('question');
+      break;
+      
+    case 'showAnswer':
+      // Étape 2: Afficher les réponses une par une
+      const answerBtn = document.getElementById('ans' + data.answerIndex);
+      const answerText = answerBtn.querySelector('.answer-text');
+      answerText.textContent = data.answerText;
+      
+      // Effet d'apparition
+      answerBtn.style.opacity = '0';
+      answerBtn.style.transform = 'translateY(20px)';
+      document.getElementById('answersGrid').style.display='grid';
+      
+      setTimeout(() => {
+        answerBtn.style.transition = 'all 0.8s ease';
+        answerBtn.style.opacity = '1';
+        answerBtn.style.transform = 'translateY(0)';
+      }, 100);
+      
+      // Mettre à jour le statut
+      const letters = ['A', 'B', 'C', 'D'];
+      document.getElementById('statusText').textContent=`📝 OPTION ${letters[data.answerIndex]} RÉVÉLÉE`;
+      
+      // Son de tick pour chaque option
+      playDramaticSound('option');
+      break;
+      
+    case 'startTimer':
+      // Étape 3: Démarrer le timer et permettre les réponses
+      canAnswer = true;
+      hasAnswered = false;
+      currentQuestion = data.question;
+      
+      // Activer tous les boutons
+      for(let i=0;i<4;i++){
+        const btn=document.getElementById('ans'+i);
+        btn.disabled=false;
+        btn.style.transition = 'none'; // Réinitialiser les transitions
+      }
+      
+      document.getElementById('statusText').textContent='🎯 CHOISISSEZ VOTRE RÉPONSE !';
+      document.getElementById('statusText').style.color='var(--neon-orange)';
+      document.getElementById('infoText').textContent='Premier à cliquer = prioritaire !';
+      document.getElementById('infoText').style.color='var(--text-muted)';
+      
+      // Initialiser le timer
+      if (data.timeLeft) {
+        updateTimer(data.timeLeft);
+      }
+      
+      // Son d'alarme dramatique pour le démarrage
+      playDramaticSound('timer');
+      break;
+      
+    case 'timerUpdate':
+      updateTimer(data.timeLeft);
+      break;
+      
+    case 'timeUp':
+      document.getElementById('statusText').textContent='⏰ TEMPS ÉCOULÉ !';
+      document.getElementById('statusText').className='status-text';
+      
+      // Afficher la bonne réponse
+      if (data.correctIndex !== null && data.correctIndex !== undefined) {
+        document.getElementById('ans' + data.correctIndex).classList.add('correct');
+        document.getElementById('infoText').textContent=`Bonne réponse: ${data.correctAnswer || 'Option ' + ['A','B','C','D'][data.correctIndex]}`;
+        document.getElementById('infoText').style.color='var(--neon-green)';
+        
+        // Afficher l'explication si disponible
+        if (data.explanation) {
+          const feedback = document.getElementById('resultFeedback');
+          feedback.textContent = `💡 ${data.explanation}`;
+          feedback.className = 'result-feedback feedback-correct';
+          feedback.style.display = 'block';
+        }
+      } else {
+        document.getElementById('infoText').textContent='Trop tard pour cette question';
+        document.getElementById('infoText').style.color='var(--text-muted)';
+      }
+      
+      // Désactiver tous les boutons
+      document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+      canAnswer = false;
+      
+      // Son de timeout
+      playDramaticSound('timeout');
+      break;
+      
+    case 'answerSelected':
+      if(data.team===teamNum){
+        hasAnswered=true;
+        const selectedBtn=document.getElementById('ans'+data.answerIndex);
+        selectedBtn.classList.add('selected');
+        document.querySelectorAll('.answer-btn').forEach(btn=>btn.disabled=true);
+        document.getElementById('statusText').textContent='RÉPONSE SÉLECTIONNÉE !';
+        document.getElementById('infoText').textContent='Réponse: '+selectedBtn.querySelector('.answer-text').textContent;
+        playSound(880,0.3,0.2);
+      }else{
+        canAnswer=false;
+        document.querySelectorAll('.answer-btn').forEach(btn=>btn.disabled=true);
+        document.getElementById('statusText').textContent='ÉQUIPE '+data.team+' A RÉPONDU EN PREMIER';
+        document.getElementById('infoText').textContent='Trop tard ! Attendez la prochaine question';
+      }
+      break;
+      
+    case 'wrongAnswerWithReplique':
+      if (data.team === teamNum) {
+        // Cette équipe a donné une mauvaise réponse
+        hasAnswered = true;
+        const selectedBtn = document.getElementById('ans' + data.answerIndex);
+        selectedBtn.classList.add('wrong');
+        document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+        
+        document.getElementById('statusText').textContent = '❌ MAUVAISE RÉPONSE';
+        document.getElementById('statusText').className = 'status-text error';
+        document.getElementById('infoText').textContent = `L'autre équipe peut tenter une réplique... (${data.repliqueChance}% de chance)`;
+        
+        // Marquer la bonne réponse
+        document.getElementById('ans' + data.correctIndex).classList.add('correct');
+        
+        const feedback = document.getElementById('resultFeedback');
+        feedback.textContent = `❌ MAUVAISE RÉPONSE ! ${data.penalty} points`;
+        feedback.className = 'result-feedback feedback-wrong';
+        feedback.style.display = 'block';
+        
+        playSound(200, 0.3, 0.5);
+      } else if (data.otherTeam === teamNum) {
+        // Cette équipe peut tenter une réplique
+        canAnswer = true;
+        hasAnswered = false;
+        
+        // Marquer la mauvaise réponse de l'autre équipe SANS la masquer
+        document.getElementById('ans' + data.answerIndex).classList.add('wrong');
+        
+        // Réactiver TOUS les boutons (y compris celui qui était faux)
+        document.querySelectorAll('.answer-btn').forEach((btn, index) => {
+          btn.disabled = false;
+          btn.classList.remove('selected');
+          // Ne pas masquer la mauvaise réponse - elle reste visible
+        });
+        
+        document.getElementById('statusText').textContent = '🎯 RÉPLIQUE POSSIBLE !';
+        document.getElementById('statusText').className = 'status-text active';
+        document.getElementById('infoText').textContent = `Vous pouvez tenter une réplique parmi les 4 réponses ! Répliques restantes: ${data.repliquesRestantes - 1}`;
+        
+        playSound(880, 0.2, 0.1);
+      }
+      
+      // Mettre à jour les scores
+      updateScores(data.scores);
+      break;
+      
+    case 'answerResult':
+      if(data.team===teamNum){
+        hasAnswered = true;
+        const selectedBtn = document.getElementById('ans' + data.answerIndex);
+        selectedBtn.classList.add('selected');
+        document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+        
+        const feedback=document.getElementById('resultFeedback');
+        if(data.correct){
+          const points = data.isReplique ? '+1' : '+2';
+          const repliqueText = data.isReplique ? ' (RÉPLIQUE)' : '';
+          feedback.textContent=`✅ BONNE RÉPONSE${repliqueText} ! ${points} points`;
+          feedback.className='result-feedback feedback-correct';
+          // Marquer la bonne réponse en vert
+          document.getElementById('ans'+data.correctIndex).classList.add('correct');
+          correctAnswers++;
+        }else{
+          const repliqueText = data.isReplique ? ' (RÉPLIQUE RATÉE)' : '';
+          feedback.textContent=`❌ MAUVAISE RÉPONSE${repliqueText} ! -1 point`;
+          feedback.className='result-feedback feedback-wrong';
+          // Marquer la réponse choisie en rouge et la bonne en vert
+          document.getElementById('ans'+data.answerIndex).classList.add('wrong');
+          document.getElementById('ans'+data.correctIndex).classList.add('correct');
+        }
+        feedback.style.display='block';
+        
+        // Mettre à jour les scores
+        updateScores(data.scores);
+        
+        if (data.isReplique) {
+          document.getElementById('statusText').textContent = data.correct ? 'RÉPLIQUE RÉUSSIE !' : 'RÉPLIQUE RATÉE...';
+        } else {
+          document.getElementById('statusText').textContent = data.correct ? 'EXCELLENTE RÉPONSE !' : (data.noReplique ? 'DOMMAGE, PAS DE RÉPLIQUE...' : 'DOMMAGE...');
+        }
+        document.getElementById('statusText').className = data.correct ? 'status-text success' : 'status-text error';
+        
+        playSound(data.correct?1047:200,0.3,data.correct?0.2:0.5);
+      }else{
+        // L'autre équipe a répondu - montrer le résultat
+        document.getElementById('ans'+data.correctIndex).classList.add('correct');
+        if(!data.correct && data.answerIndex !== undefined){
+          document.getElementById('ans'+data.answerIndex).classList.add('wrong');
+        }
+        
+        // Désactiver nos boutons si la question est terminée
+        if (data.questionFinished || data.correct) {
+          document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+          canAnswer = false;
+          
+          if (data.correct) {
+            document.getElementById('statusText').textContent = `${data.isReplique ? 'Réplique réussie' : 'Bonne réponse'} de l'autre équipe`;
+            document.getElementById('infoText').textContent = 'Question terminée';
+          }
+        }
+        
+        // Mettre à jour les scores
+        updateScores(data.scores);
+      }
+      break;
+      
+    case 'nextQuestion':
+      document.getElementById('questionText').textContent='Prochaine question...';
+      document.getElementById('questionText').className='question-text question-hidden';
+      document.getElementById('answersGrid').style.display='none';
+      document.getElementById('categoryBadge').style.display='none';
+      document.getElementById('buzzer').style.display='block';
+      canAnswer=false;
+      document.getElementById('statusText').textContent='PROCHAINE QUESTION...';
+      document.getElementById('infoText').textContent='Préparez-vous !';
+      document.getElementById('resultFeedback').style.display='none';
+      break;
+      
+    case 'gameEnded':
+      canAnswer=false;
+      showFinalResults(data.scores, data.winner, data.totalQuestions);
+      break;
+      
+    case 'buzzerReset':
+      canBuzz=true;
+      hasBuzzed=false;
+      document.getElementById('buzzer').classList.remove('disabled','buzzed');
+      document.getElementById('buzzer').classList.add('active');
+      break;
+  }
+}
+
+function selectAnswer(answerIndex){
+  if(!canAnswer||hasAnswered)return;
+  canAnswer=false;
+  hasAnswered=true;
+  
+  // Feedback visuel immédiat pour l'équipe qui clique
+  const selectedBtn = document.getElementById('ans' + answerIndex);
+  selectedBtn.classList.add('selected');
+  document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+  
+  // Vérifier si c'est la bonne réponse pour feedback immédiat
+  const isCorrect = answerIndex === currentQuestion.r;
+  if (isCorrect) {
+    selectedBtn.classList.add('correct');
+    document.getElementById('statusText').textContent = '✅ EXCELLENTE RÉPONSE !';
+    document.getElementById('statusText').style.color = 'var(--neon-green)';
+    document.getElementById('infoText').textContent = 'Bonne réponse ! +2 points';
+    document.getElementById('infoText').style.color = 'var(--neon-green)';
+    playDramaticSound('correct'); // Son de victoire dramatique
+  } else {
+    selectedBtn.classList.add('wrong');
+    document.getElementById('statusText').textContent = '❌ MAUVAISE RÉPONSE';
+    document.getElementById('statusText').style.color = 'var(--neon-red)';
+    document.getElementById('infoText').textContent = 'Mauvaise réponse... En attente du résultat';
+    document.getElementById('infoText').style.color = 'var(--neon-red)';
+    playDramaticSound('wrong'); // Son d'erreur dramatique
+  }
+  
+  ws.send(JSON.stringify({type:'selectAnswer',team:teamNum,answerIndex:answerIndex}));
+}
+
+function updateTimer(timeLeft) {
+  // Vous pouvez ajouter un timer visuel ici si souhaité
+  // Pour l'instant, on met juste à jour le texte d'info
+  if (timeLeft <= 5) {
+    document.getElementById('infoText').textContent = `⏰ Plus que ${timeLeft} secondes !`;
+    document.getElementById('infoText').style.color = 'var(--neon-red)';
+    
+    // Son de tension pour les dernières secondes
+    if (timeLeft === 5) {
+      playDramaticSound('tension');
+    }
+  } else if (timeLeft <= 10) {
+    document.getElementById('infoText').textContent = `⏰ ${timeLeft} secondes restantes`;
+    document.getElementById('infoText').style.color = 'var(--neon-orange)';
+  } else {
+    document.getElementById('infoText').textContent = `${timeLeft} secondes`;
+    document.getElementById('infoText').style.color = 'var(--text-muted)';
+  }
+}
+
+function buzz(){
+  if(!canBuzz||hasBuzzed)return;
+  canBuzz=false;
+  ws.send(JSON.stringify({type:'buzz',team:teamNum}));
+}
+
+function playSound(freq,vol,dur){
+  try{
+    const ctx=new AudioContext();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value=freq;
+    osc.type='sine';
+    gain.gain.setValueAtTime(vol,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    osc.start();
+    osc.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+
+// Sons dramatiques style 24h Chrono
+function playDramaticSound(type) {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  
+  switch(type) {
+    case 'question':
+      // Son dramatique pour l'apparition de la question
+      playTensionChord(ctx, [220, 277, 330], 0.3, 1.5);
+      break;
+      
+    case 'option':
+      // Son de tick pour chaque option
+      playTickSound(ctx, 800, 0.2, 0.1);
+      break;
+      
+    case 'timer':
+      // Son d'alarme pour le démarrage du timer
+      playAlarmSound(ctx, 0.4, 1.0);
+      break;
+      
+    case 'correct':
+      // Son de victoire
+      playVictorySound(ctx, 0.5, 1.2);
+      break;
+      
+    case 'wrong':
+      // Son d'erreur dramatique
+      playErrorSound(ctx, 0.4, 0.8);
+      break;
+      
+    case 'tension':
+      // Son de tension continue (pour les dernières secondes)
+      playTensionSound(ctx, 0.3, 2.0);
+      break;
+      
+    case 'victory':
+      // Son de victoire finale
+      playVictorySound(ctx, 0.6, 2.0);
+      break;
+      
+    case 'endgame':
+      // Son de fin de partie
+      playEndGameSound(ctx, 0.4, 1.5);
+      break;
+      
+    case 'timeout':
+      // Son de timeout dramatique
+      playTimeoutSound(ctx, 0.5, 1.0);
+      break;
+  }
+}
+
+function playTensionChord(ctx, frequencies, volume, duration) {
+  frequencies.forEach((freq, index) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.frequency.value = freq;
+    osc.type = 'sawtooth';
+    
+    gain.gain.setValueAtTime(volume / frequencies.length, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    
+    osc.start(ctx.currentTime + index * 0.1);
+    osc.stop(ctx.currentTime + duration);
+  });
+}
+
+function playTickSound(ctx, freq, volume, duration) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  osc.frequency.value = freq;
+  osc.type = 'square';
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc.start();
+  osc.stop(ctx.currentTime + duration);
+}
+
+function playAlarmSound(ctx, volume, duration) {
+  // Son d'alarme avec oscillation
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const lfo = ctx.createOscillator();
+  const lfoGain = ctx.createGain();
+  
+  // Configuration LFO pour l'effet d'alarme
+  lfo.frequency.value = 8; // 8 Hz d'oscillation
+  lfo.connect(lfoGain);
+  lfoGain.gain.value = 100;
+  lfoGain.connect(osc1.frequency);
+  lfoGain.connect(osc2.frequency);
+  
+  osc1.frequency.value = 800;
+  osc2.frequency.value = 1000;
+  osc1.type = 'sawtooth';
+  osc2.type = 'sawtooth';
+  
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(ctx.destination);
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  lfo.start();
+  osc1.start();
+  osc2.start();
+  
+  lfo.stop(ctx.currentTime + duration);
+  osc1.stop(ctx.currentTime + duration);
+  osc2.stop(ctx.currentTime + duration);
+}
+
+function playVictorySound(ctx, volume, duration) {
+  // Accord majeur ascendant
+  const frequencies = [523, 659, 784, 1047]; // Do, Mi, Sol, Do
+  frequencies.forEach((freq, index) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    
+    gain.gain.setValueAtTime(volume / frequencies.length, ctx.currentTime + index * 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    
+    osc.start(ctx.currentTime + index * 0.2);
+    osc.stop(ctx.currentTime + duration);
+  });
+}
+
+function playErrorSound(ctx, volume, duration) {
+  // Son d'erreur avec descente dramatique
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  osc.frequency.setValueAtTime(400, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + duration);
+  osc.type = 'sawtooth';
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc.start();
+  osc.stop(ctx.currentTime + duration);
+}
+
+function playTensionSound(ctx, volume, duration) {
+  // Son de tension avec battement
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc1.frequency.value = 220;
+  osc2.frequency.value = 223; // Légèrement désaccordé pour créer un battement
+  osc1.type = 'sawtooth';
+  osc2.type = 'sawtooth';
+  
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(ctx.destination);
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc1.start();
+  osc2.start();
+  osc1.stop(ctx.currentTime + duration);
+  osc2.stop(ctx.currentTime + duration);
+}
+
+function showFinalResults(scores, winner, totalQuestions) {
+  // Masquer l'interface de jeu
+  document.querySelector('.container').style.display = 'none';
+  
+  // Afficher l'écran de résultats
+  document.getElementById('resultsScreen').style.display = 'flex';
+  
+  // Récupérer les noms d'équipes
+  const team1Name = document.getElementById('scoreTeam1Name').textContent;
+  const team2Name = document.getElementById('scoreTeam2Name').textContent;
+  
+  // Mettre à jour les noms et scores finaux
+  document.getElementById('finalTeamName1').textContent = team1Name;
+  document.getElementById('finalTeamName2').textContent = team2Name;
+  document.getElementById('finalScoreValue1').textContent = scores.team1 || 0;
+  document.getElementById('finalScoreValue2').textContent = scores.team2 || 0;
+  
+  // Déterminer le vainqueur
+  const score1 = scores.team1 || 0;
+  const score2 = scores.team2 || 0;
+  
+  let winnerText, winnerName, winnerIcon;
+  
+  if (score1 > score2) {
+    // Équipe 1 gagne
+    winnerText = '🎉 VAINQUEUR 🎉';
+    winnerName = team1Name;
+    winnerIcon = '👑';
+    document.getElementById('finalScoreCard1').classList.add('winner');
+  } else if (score2 > score1) {
+    // Équipe 2 gagne
+    winnerText = '🎉 VAINQUEUR 🎉';
+    winnerName = team2Name;
+    winnerIcon = '👑';
+    document.getElementById('finalScoreCard2').classList.add('winner');
+  } else {
+    // Égalité
+    winnerText = '🤝 ÉGALITÉ 🤝';
+    winnerName = 'Match Nul !';
+    winnerIcon = '⚖️';
+  }
+  
+  document.getElementById('winnerText').textContent = winnerText;
+  document.getElementById('winnerName').textContent = winnerName;
+  document.getElementById('winnerIcon').textContent = winnerIcon;
+  
+  // Statistiques
+  document.getElementById('totalQuestions').textContent = totalQuestions || 15;
+  
+  // Performance de l'équipe
+  const myScore = teamNum === 1 ? score1 : score2;
+  const otherScore = teamNum === 1 ? score2 : score1;
+  let performance;
+  
+  if (myScore > otherScore) {
+    performance = '🏆 VICTOIRE !';
+  } else if (myScore === otherScore) {
+    performance = '🤝 ÉGALITÉ';
+  } else {
+    performance = '💪 BONNE PARTIE';
+  }
+  
+  document.getElementById('teamPerformance').textContent = performance;
+  
+  // Message personnalisé
+  let message;
+  if (myScore > otherScore) {
+    message = `🎉 Félicitations ${teamName} ! Vous avez remporté cette partie avec ${myScore} points !`;
+  } else if (myScore === otherScore) {
+    message = `🤝 Partie serrée ! Égalité parfaite avec ${myScore} points chacun !`;
+  } else {
+    message = `💪 Bien joué ${teamName} ! Vous avez marqué ${myScore} points. Continuez comme ça !`;
+  }
+  
+  document.getElementById('resultsMessage').textContent = message;
+  
+  // Son de fin de partie
+  if (myScore > otherScore) {
+    playDramaticSound('victory'); // Son de victoire
+  } else {
+    playDramaticSound('endgame'); // Son de fin de partie
+  }
+}
+
+// Ajouter les nouveaux sons dramatiques
+function playVictorySound(ctx, volume, duration) {
+  // Fanfare de victoire
+  const notes = [523, 659, 784, 1047, 1319]; // Do, Mi, Sol, Do, Mi
+  notes.forEach((freq, index) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    
+    gain.gain.setValueAtTime(volume / notes.length, ctx.currentTime + index * 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    
+    osc.start(ctx.currentTime + index * 0.3);
+    osc.stop(ctx.currentTime + duration);
+  });
+}
+
+function playEndGameSound(ctx, volume, duration) {
+  // Son de fin de partie respectueux
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  osc.frequency.setValueAtTime(440, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(330, ctx.currentTime + duration);
+  osc.type = 'sine';
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc.start();
+  osc.stop(ctx.currentTime + duration);
+}
+
+function playTimeoutSound(ctx, volume, duration) {
+  // Son de timeout avec effet dramatique
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  // Deux oscillateurs pour un effet plus dramatique
+  osc1.frequency.setValueAtTime(800, ctx.currentTime);
+  osc1.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + duration);
+  osc2.frequency.setValueAtTime(600, ctx.currentTime);
+  osc2.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + duration);
+  
+  osc1.type = 'sawtooth';
+  osc2.type = 'triangle';
+  
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(ctx.destination);
+  
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  
+  osc1.start();
+  osc2.start();
+  osc1.stop(ctx.currentTime + duration);
+  osc2.stop(ctx.currentTime + duration);
+}
+
+connect();
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+═══════════════════════════════════════════════════════════
+  🎮 AWS GENIUS QUIZ - DÉMARRAGE RAPIDE (3 MACHINES)
+═══════════════════════════════════════════════════════════
+
+📦 ÉTAPE 1 : INSTALLER NODE.JS (sur la machine serveur)
+────────────────────────────────────────────────────────────
+Télécharger : https://nodejs.org/
+Installer la version LTS (recommandée)
+
+
+🖥️ ÉTAPE 2 : DÉMARRER LE SERVEUR (machine animateur)
+────────────────────────────────────────────────────────────
+1. Ouvrir PowerShell dans le dossier :
+   cd C:\Users\...\aws-genie-herbe\server
+
+2. Installer les dépendances (première fois seulement) :
+   npm install
+
+3. Démarrer le serveur :
+   npm start
+
+4. Noter l'adresse IP affichée (ex: 192.168.1.10)
+
+
+🌐 ÉTAPE 3 : OUVRIR LES INTERFACES
+────────────────────────────────────────────────────────────
+
+📺 MACHINE ANIMATEUR (serveur) :
+   Navigateur → http://localhost:3000/host.html
+
+🔵 MACHINE ÉQUIPE 1 :
+   Navigateur → http://192.168.1.10:3000/client.html?team=1
+   (Remplacer 192.168.1.10 par l'IP du serveur)
+
+🔴 MACHINE ÉQUIPE 2 :
+   Navigateur → http://192.168.1.10:3000/client.html?team=2
+
+
+🎯 COMMENT JOUER
+────────────────────────────────────────────────────────────
+1. Animateur : Entrer les noms d'équipes → Lancer
+2. Équipes : Attendre que le buzzer s'active
+3. Question affichée → Première équipe à cliquer sur le buzzer
+4. Animateur : Cliquer "Bonne réponse" ou "Mauvaise réponse"
+5. Animateur : Cliquer "Question suivante"
+
+
+🔧 PROBLÈMES COURANTS
+────────────────────────────────────────────────────────────
+❌ "npm n'est pas reconnu"
+   → Installer Node.js
+
+❌ Les clients ne se connectent pas
+   → Vérifier que toutes les machines sont sur le même WiFi
+   → Désactiver le pare-feu Windows temporairement
+   → Vérifier l'adresse IP du serveur (ipconfig dans PowerShell)
+
+❌ Port 3000 déjà utilisé
+   → Fermer les autres applications
+   → Ou modifier le port dans server/server.js (ligne 6)
+
+
+📞 COMMANDES UTILES
+────────────────────────────────────────────────────────────
+Trouver l'IP du serveur (Windows) :
+   ipconfig
+
+Arrêter le serveur :
+   Ctrl + C dans PowerShell
+
+Redémarrer le serveur :
+   npm start
+
+
+═══════════════════════════════════════════════════════════
+  Bon jeu ! 🚀
+═══════════════════════════════════════════════════════════

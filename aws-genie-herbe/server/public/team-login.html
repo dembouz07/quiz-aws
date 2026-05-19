@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Quiz - Connexion Équipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --neon-orange:#ff6b00;--neon-blue:#00d4ff;--neon-green:#00ff88;--neon-red:#ff2244;
+  --bg:#050a14;--bg2:#0a1628;--bg3:#0f2040;
+  --text:#e8f4ff;--text-muted:#6a8aaa;
+  --glow-o:0 0 20px #ff6b00,0 0 40px #ff6b0066;
+  --glow-b:0 0 20px #00d4ff,0 0 40px #00d4ff66;
+}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,#0a1f3a 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,#0d1f35 0%,transparent 50%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 10% 15%,#ffffff33 0%,transparent 100%),radial-gradient(1px 1px at 30% 40%,#ffffff22 0%,transparent 100%),radial-gradient(1px 1px at 50% 10%,#ffffff44 0%,transparent 100%),radial-gradient(1px 1px at 70% 60%,#ffffff22 0%,transparent 100%),radial-gradient(1px 1px at 90% 30%,#ffffff33 0%,transparent 100%);pointer-events:none;z-index:0}
+
+.login-container{position:relative;z-index:1;width:100%;max-width:500px;padding:2rem}
+
+.logo{text-align:center;margin-bottom:2rem}
+.logo-icon{font-size:4rem;display:block;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px #ff6b00)}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.logo h1{font-family:'Orbitron',monospace;font-size:2.5rem;font-weight:900;text-transform:uppercase;letter-spacing:4px;background:linear-gradient(135deg,#ff6b00,#ffcc00,#ff6b00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite;background-size:200%}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.logo .subtitle{color:var(--neon-blue);font-size:1rem;letter-spacing:3px;text-transform:uppercase;margin-top:0.5rem;text-shadow:var(--glow-b)}
+
+.login-form{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:16px;padding:2rem;position:relative;overflow:hidden}
+.login-form::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon-orange),transparent)}
+.login-form::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--neon-blue),transparent)}
+
+.form-title{font-family:'Orbitron',monospace;font-size:1.2rem;color:var(--neon-orange);text-align:center;margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:2px}
+
+.form-group{margin-bottom:1.5rem}
+.form-label{display:block;font-size:0.9rem;font-weight:700;color:var(--text-muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px}
+.form-input{width:100%;background:var(--bg);border:1px solid #1a3a5c;border-radius:8px;color:var(--text);padding:1rem;font-size:1.1rem;font-family:'Exo 2',sans-serif;outline:none;transition:all 0.2s}
+.form-input:focus{border-color:var(--neon-orange);box-shadow:0 0 10px #ff6b0044}
+.form-input::placeholder{color:var(--text-muted)}
+
+.team-selector{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.team-option{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:2px solid #1a3a5c;border-radius:12px;padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.team-option::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.03) 50%,transparent 70%);transform:translateX(-100%);transition:transform 0.3s}
+.team-option:hover::before{transform:translateX(100%)}
+.team-option.team1{border-color:#ff6b0044}
+.team-option.team1:hover,.team-option.team1.selected{border-color:var(--neon-orange);background:linear-gradient(135deg,rgba(255,107,0,0.1),var(--bg3));box-shadow:var(--glow-o)}
+.team-option.team2{border-color:#00d4ff44}
+.team-option.team2:hover,.team-option.team2.selected{border-color:var(--neon-blue);background:linear-gradient(135deg,rgba(0,212,255,0.1),var(--bg3));box-shadow:var(--glow-b)}
+.team-number{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;margin-bottom:0.5rem}
+.team-option.team1 .team-number{color:var(--neon-orange)}
+.team-option.team2 .team-number{color:var(--neon-blue)}
+.team-label{font-size:0.9rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+
+.connection-status{text-align:center;margin-bottom:1.5rem;padding:0.75rem;border-radius:8px;font-size:0.9rem;font-weight:700;letter-spacing:1px}
+.status-connecting{background:rgba(255,107,0,0.2);border:1px solid var(--neon-orange);color:var(--neon-orange)}
+.status-connected{background:rgba(0,255,136,0.2);border:1px solid var(--neon-green);color:var(--neon-green)}
+.status-error{background:rgba(255,34,68,0.2);border:1px solid var(--neon-red);color:var(--neon-red)}
+
+.login-btn{width:100%;padding:1.2rem;background:linear-gradient(135deg,#ff6b00,#ff9900);border:none;border-radius:12px;color:#000;font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all 0.2s;box-shadow:var(--glow-o)}
+.login-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.2) 50%,transparent 70%);transform:translateX(-100%);transition:transform 0.4s}
+.login-btn:hover::before{transform:translateX(100%)}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px #ff6b00,0 0 60px #ff6b0066}
+.login-btn:active{transform:translateY(0)}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+.info-text{text-align:center;margin-top:1rem;font-size:0.85rem;color:var(--text-muted);line-height:1.4}
+
+@media(max-width:600px){
+  .login-container{padding:1rem}
+  .team-selector{grid-template-columns:1fr}
+  .logo h1{font-size:2rem}
+}
+</style>
+</head>
+<body>
+<div class="login-container">
+  <div class="logo">
+    <span class="logo-icon">☁</span>
+    <h1>AWS Quiz</h1>
+    <div class="subtitle">◆ CONNEXION ÉQUIPE ◆</div>
+  </div>
+
+  <div class="login-form">
+    <div class="form-title">Rejoindre la Partie</div>
+    
+    <div class="form-group">
+      <label class="form-label">Nom de votre équipe</label>
+      <input type="text" class="form-input" id="teamName" placeholder="Entrez le nom de votre équipe..." maxlength="25" autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Sélectionnez votre position</label>
+      <div class="team-selector">
+        <div class="team-option team1" onclick="selectTeam(1)">
+          <div class="team-number">1</div>
+          <div class="team-label">Équipe 1</div>
+        </div>
+        <div class="team-option team2" onclick="selectTeam(2)">
+          <div class="team-number">2</div>
+          <div class="team-label">Équipe 2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connection-status status-connecting" id="connectionStatus">
+      🔄 Connexion au serveur...
+    </div>
+
+    <button class="login-btn" id="joinBtn" onclick="joinGame()" disabled>
+      🎯 REJOINDRE LE QUIZ
+    </button>
+
+    <div class="info-text">
+      Choisissez votre nom d'équipe et votre position, puis cliquez pour rejoindre la partie en cours.
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedTeam = null;
+let ws = null;
+let serverConnected = false;
+
+// Connexion automatique au serveur
+function connectToServer() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host;
+  ws = new WebSocket(protocol + '//' + host);
+  
+  ws.onopen = () => {
+    console.log('Connecté au serveur');
+    serverConnected = true;
+    updateConnectionStatus('connected', '✅ Serveur connecté');
+    updateJoinButton();
+  };
+  
+  ws.onclose = () => {
+    console.log('Déconnecté du serveur');
+    serverConnected = false;
+    updateConnectionStatus('error', '❌ Connexion perdue - Reconnexion...');
+    updateJoinButton();
+    setTimeout(connectToServer, 2000);
+  };
+  
+  ws.onerror = (err) => {
+    console.error('Erreur WebSocket:', err);
+    updateConnectionStatus('error', '❌ Erreur de connexion');
+  };
+}
+
+function selectTeam(teamNumber) {
+  selectedTeam = teamNumber;
+  
+  // Mettre à jour l'interface
+  document.querySelectorAll('.team-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  document.querySelector(`.team-option.team${teamNumber}`).classList.add('selected');
+  
+  updateJoinButton();
+  
+  // Son de sélection
+  playSound(600 + (teamNumber * 200), 0.2, 0.1);
+}
+
+function updateConnectionStatus(status, message) {
+  const statusEl = document.getElementById('connectionStatus');
+  statusEl.className = `connection-status status-${status}`;
+  statusEl.textContent = message;
+}
+
+function updateJoinButton() {
+  const joinBtn = document.getElementById('joinBtn');
+  const teamName = document.getElementById('teamName').value.trim();
+  
+  const canJoin = serverConnected && selectedTeam && teamName.length >= 2;
+  joinBtn.disabled = !canJoin;
+  
+  if (canJoin) {
+    joinBtn.textContent = `🎯 REJOINDRE COMME ÉQUIPE ${selectedTeam}`;
+  } else {
+    joinBtn.textContent = '🎯 REJOINDRE LE QUIZ';
+  }
+}
+
+function joinGame() {
+  const teamName = document.getElementById('teamName').value.trim();
+  
+  if (!teamName || teamName.length < 2) {
+    alert('Veuillez entrer un nom d\'équipe (minimum 2 caractères)');
+    return;
+  }
+  
+  if (!selectedTeam) {
+    alert('Veuillez sélectionner votre position (Équipe 1 ou 2)');
+    return;
+  }
+  
+  if (!serverConnected) {
+    alert('Connexion au serveur perdue. Veuillez patienter...');
+    return;
+  }
+  
+  // Son de confirmation
+  playSound(1047, 0.3, 0.3);
+  
+  // Redirection vers l'interface de jeu avec les paramètres
+  const gameUrl = `client.html?team=${selectedTeam}&name=${encodeURIComponent(teamName)}`;
+  window.location.href = gameUrl;
+}
+
+function playSound(freq, vol, dur) {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+
+// Event listeners
+document.getElementById('teamName').addEventListener('input', updateJoinButton);
+document.getElementById('teamName').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    joinGame();
+  }
+});
+
+// Auto-focus sur le champ nom
+document.getElementById('teamName').focus();
+
+// Connexion automatique au démarrage
+connectToServer();
+</script>
+</body>
+</html>

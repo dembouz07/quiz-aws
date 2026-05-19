@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Answer Selection</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #333; border-radius: 8px; }
+        button { padding: 10px 15px; margin: 5px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #005a9e; }
+        .log { background: #000; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+        .status { padding: 5px 10px; border-radius: 4px; margin: 5px 0; }
+        .connected { background: #0a5d0a; }
+        .disconnected { background: #5d0a0a; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Answer Selection Functionality</h1>
+    
+    <div class="test-section">
+        <h3>Connection Status</h3>
+        <div id="status" class="status disconnected">Disconnected</div>
+        <button onclick="connect()">Connect as Team 1</button>
+        <button onclick="connectTeam2()">Connect as Team 2</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Answer Selection</h3>
+        <p>Select an answer to test the new functionality:</p>
+        <button onclick="selectAnswer(0)">A - Answer 0</button>
+        <button onclick="selectAnswer(1)">B - Answer 1</button>
+        <button onclick="selectAnswer(2)">C - Answer 2</button>
+        <button onclick="selectAnswer(3)">D - Answer 3</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Message Log</h3>
+        <div id="log" class="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        let ws;
+        let teamNum = 1;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function updateStatus(connected, team = teamNum) {
+            const statusDiv = document.getElementById('status');
+            if (connected) {
+                statusDiv.textContent = `Connected as Team ${team}`;
+                statusDiv.className = 'status connected';
+            } else {
+                statusDiv.textContent = 'Disconnected';
+                statusDiv.className = 'status disconnected';
+            }
+        }
+        
+        function connect() {
+            teamNum = 1;
+            connectToServer();
+        }
+        
+        function connectTeam2() {
+            teamNum = 2;
+            connectToServer();
+        }
+        
+        function connectToServer() {
+            if (ws) {
+                ws.close();
+            }
+            
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            ws = new WebSocket(protocol + '//' + host);
+            
+            ws.onopen = () => {
+                log(`✅ Connected to server as Team ${teamNum}`);
+                updateStatus(true, teamNum);
+                ws.send(JSON.stringify({type: 'registerTeam', team: teamNum}));
+            };
+            
+            ws.onmessage = (e) => {
+                const data = JSON.parse(e.data);
+                log(`📨 Received: ${JSON.stringify(data)}`);
+                handleMessage(data);
+            };
+            
+            ws.onclose = () => {
+                log('❌ Disconnected from server');
+                updateStatus(false);
+            };
+            
+            ws.onerror = (err) => {
+                log(`🚨 WebSocket error: ${err}`);
+            };
+        }
+        
+        function handleMessage(data) {
+            switch(data.type) {
+                case 'registered':
+                    log(`✅ Registered as Team ${teamNum}`);
+                    break;
+                case 'newQuestion':
+                    log(`❓ New question: ${data.question.q}`);
+                    log(`📝 Answers: ${data.question.a.join(', ')}`);
+                    log(`✅ Correct answer index: ${data.question.r}`);
+                    break;
+                case 'answerSelected':
+                    log(`🎯 Team ${data.team} selected answer ${data.answerIndex}`);
+                    break;
+                case 'answerResult':
+                    log(`📊 Result for Team ${data.team}: ${data.correct ? 'CORRECT' : 'WRONG'}`);
+                    log(`📈 Scores - Team 1: ${data.scores.team1}, Team 2: ${data.scores.team2}`);
+                    break;
+                default:
+                    log(`📋 Other message: ${data.type}`);
+            }
+        }
+        
+        function selectAnswer(answerIndex) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('❌ Not connected to server');
+                return;
+            }
+            
+            log(`🎯 Selecting answer ${answerIndex} as Team ${teamNum}`);
+            ws.send(JSON.stringify({
+                type: 'selectAnswer',
+                team: teamNum,
+                answerIndex: answerIndex
+            }));
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        // Auto-connect on page load
+        window.onload = () => {
+            log('🚀 Test page loaded');
+        };
+    </script>
+</body>
+</html>

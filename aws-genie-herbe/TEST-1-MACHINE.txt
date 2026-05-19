@@ -1,0 +1,125 @@
+═══════════════════════════════════════════════════════════
+  🎮 GUIDE : TESTER SUR 1 MACHINE (3 FENÊTRES)
+═══════════════════════════════════════════════════════════
+
+Vous avez 3 fenêtres de navigateur ouvertes.
+Voici comment les utiliser :
+
+
+📐 DISPOSITION DES FENÊTRES
+────────────────────────────────────────────────────────────
+Disposez les 3 fenêtres comme ceci :
+
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│         📺 FENÊTRE ANIMATEUR (host.html)               │
+│         [Configuration] [Questions] [Scores]            │
+│                                                         │
+├──────────────────────────┬──────────────────────────────┤
+│                          │                              │
+│  🔵 ÉQUIPE 1             │  🔴 ÉQUIPE 2                 │
+│  (client.html?team=1)    │  (client.html?team=2)        │
+│                          │                              │
+│     [GROS BUZZER]        │     [GROS BUZZER]            │
+│       ORANGE             │        BLEU                  │
+│                          │                              │
+└──────────────────────────┴──────────────────────────────┘
+
+
+🎯 ÉTAPE PAR ÉTAPE
+────────────────────────────────────────────────────────────
+
+1️⃣  FENÊTRE ANIMATEUR (en haut)
+   ─────────────────────────────
+   ✓ Entrez "Équipe Alpha" pour l'équipe 1
+   ✓ Entrez "Équipe Beta" pour l'équipe 2
+   ✓ Choisissez 5 questions (pour tester rapidement)
+   ✓ Cliquez sur "LANCER LE QUIZ"
+   
+   → Une question s'affiche !
+
+
+2️⃣  FENÊTRES ÉQUIPES (en bas)
+   ─────────────────────────────
+   ✓ Les buzzers deviennent LUMINEUX (pas grisés)
+   ✓ Le texte change : "Cliquez sur le buzzer !"
+
+
+3️⃣  CLIQUER SUR UN BUZZER
+   ─────────────────────────────
+   Option A : Cliquez sur le BUZZER ORANGE (Équipe 1)
+   Option B : Cliquez sur le BUZZER BLEU (Équipe 2)
+   
+   → Le buzzer cliqué s'illumine !
+   → L'autre buzzer se grise (trop tard)
+   → L'animateur voit "ÉQUIPE X a buzzé !"
+
+
+4️⃣  VALIDER LA RÉPONSE (Animateur)
+   ─────────────────────────────
+   ✓ Lisez la question à voix haute
+   ✓ L'équipe qui a buzzé répond
+   ✓ Cliquez "✓ Bonne réponse (+2)" ou "✗ Mauvaise (-1)"
+   
+   → Les scores se mettent à jour automatiquement !
+
+
+5️⃣  QUESTION SUIVANTE
+   ─────────────────────────────
+   ✓ Cliquez "SUIVANT →" (Animateur)
+   
+   → Les buzzers se réactivent
+   → Nouvelle question s'affiche
+   → Recommencez à l'étape 3
+
+
+🔧 PROBLÈMES COURANTS
+────────────────────────────────────────────────────────────
+
+❌ "Le buzzer ne réagit pas quand je clique"
+   → Vérifiez que la question est affichée sur l'animateur
+   → Le buzzer doit être LUMINEUX (pas grisé/transparent)
+   → Attendez 1-2 secondes après le lancement de la question
+
+❌ "Les fenêtres ne se synchronisent pas"
+   → Vérifiez que le serveur tourne (fenêtre PowerShell ouverte)
+   → Rafraîchissez les pages (F5)
+   → Vérifiez la connexion : "CONNECTÉ" en haut à droite
+
+❌ "Je vois 'DÉCONNECTÉ' en haut à droite"
+   → Le serveur n'est pas démarré
+   → Ouvrez PowerShell dans aws-genie-herbe/server
+   → Tapez : npm start
+
+❌ "Les 3 fenêtres ne sont pas ouvertes"
+   → Ouvrez manuellement :
+     • http://localhost:3000/host.html
+     • http://localhost:3000/client.html?team=1
+     • http://localhost:3000/client.html?team=2
+
+
+💡 ASTUCES
+────────────────────────────────────────────────────────────
+
+✓ Utilisez Windows + Flèche pour disposer les fenêtres
+✓ Testez d'abord avec 5 questions pour comprendre
+✓ Le buzzer fait un son quand vous cliquez
+✓ Regardez les 3 fenêtres en même temps pour voir la magie !
+
+
+🎓 COMPRENDRE LE SYSTÈME
+────────────────────────────────────────────────────────────
+
+Sur 1 machine (test) :
+  → Vous jouez tous les rôles (animateur + 2 équipes)
+  → Vous cliquez manuellement sur les buzzers
+
+Sur 3 machines (réel) :
+  → Chaque machine a son propre rôle
+  → Chaque équipe a sa propre machine avec son buzzer
+  → L'animateur contrôle le jeu depuis sa machine
+
+
+═══════════════════════════════════════════════════════════
+  Prêt ? Lancez la partie et testez ! 🚀
+═══════════════════════════════════════════════════════════

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Quiz - Animateur</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --neon-orange:#ff6b00;--neon-blue:#00d4ff;--neon-green:#00ff88;--neon-red:#ff2244;--neon-purple:#b44fff;
+  --bg:#050a14;--bg2:#0a1628;--bg3:#0f2040;--bg4:#162a4a;
+  --text:#e8f4ff;--text-muted:#6a8aaa;
+  --glow-o:0 0 20px #ff6b00,0 0 40px #ff6b0066;
+  --glow-b:0 0 20px #00d4ff,0 0 40px #00d4ff66;
+  --glow-g:0 0 20px #00ff88,0 0 40px #00ff8866;
+  --glow-r:0 0 20px #ff2244,0 0 40px #ff224466;
+}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,#0a1f3a 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,#0d1f35 0%,transparent 50%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 10% 15%,#ffffff33 0%,transparent 100%),radial-gradient(1px 1px at 30% 40%,#ffffff22 0%,transparent 100%),radial-gradient(1px 1px at 50% 10%,#ffffff44 0%,transparent 100%),radial-gradient(1px 1px at 70% 60%,#ffffff22 0%,transparent 100%),radial-gradient(1px 1px at 90% 30%,#ffffff33 0%,transparent 100%);pointer-events:none;z-index:0}
+
+.container{position:relative;z-index:1;min-height:100vh;padding:2rem}
+
+.header{text-align:center;margin-bottom:2rem}
+.logo-icon{font-size:4rem;display:block;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px #00ff88);margin-bottom:1rem}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.logo{font-family:'Orbitron',monospace;font-size:clamp(2rem,6vw,3rem);font-weight:900;text-transform:uppercase;letter-spacing:4px;background:linear-gradient(135deg,#00ff88,#00d4ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite;background-size:200%;margin-bottom:0.5rem}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.subtitle{color:var(--neon-blue);font-size:1rem;letter-spacing:3px;text-transform:uppercase;text-shadow:var(--glow-b)}
+
+.quiz-setup{max-width:800px;margin:0 auto;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:16px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+.quiz-setup::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon-green),transparent)}
+.quiz-setup::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--neon-blue),transparent)}
+.setup-title{font-family:'Orbitron',monospace;font-size:1.2rem;color:var(--neon-green);margin-bottom:1.5rem;text-align:center;text-transform:uppercase;letter-spacing:2px}
+
+.connection-status{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:12px;padding:1rem;margin-bottom:1.5rem}
+.status-title{color:var(--neon-blue);font-weight:700;margin-bottom:0.8rem;text-transform:uppercase;letter-spacing:1px;font-size:0.9rem}
+.teams-status{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.team-status{display:flex;align-items:center;gap:0.5rem;padding:0.5rem;border-radius:8px;font-size:0.9rem}
+.team-status.connected{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--neon-green)}
+.team-status.disconnected{background:rgba(255,34,68,0.1);border:1px solid rgba(255,34,68,0.3);color:var(--neon-red)}
+.status-icon{font-size:1.2rem}
+
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+.setup-group{display:flex;flex-direction:column;gap:0.5rem}
+.setup-label{font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.setup-select{background:var(--bg);border:1px solid #1a3a5c;border-radius:8px;color:var(--text);padding:0.75rem;font-size:1rem;font-family:'Exo 2',sans-serif;outline:none;cursor:pointer;transition:all 0.2s}
+.setup-select:focus{border-color:var(--neon-green);box-shadow:0 0 10px #00ff8844}
+
+.module-info{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);border-radius:12px;padding:1rem;margin-bottom:1.5rem}
+.module-title{color:var(--neon-green);font-weight:700;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px}
+.module-list{color:var(--text-muted);font-size:0.9rem;line-height:1.4}
+
+.start-btn{width:100%;padding:1.2rem;background:linear-gradient(135deg,#00ff88,#00cc66);border:none;border-radius:12px;color:#000;font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all 0.2s;box-shadow:var(--glow-g)}
+.start-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.2) 50%,transparent 70%);transform:translateX(-100%);transition:transform 0.4s}
+.start-btn:hover::before{transform:translateX(100%)}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px #00ff88,0 0 60px #00ff8866}
+.start-btn:active{transform:translateY(0)}
+.start-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.start-btn:disabled::before{display:none}
+
+.quiz-area{max-width:1000px;margin:0 auto;display:none}
+.question-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding:1rem;background:var(--bg2);border-radius:12px}
+.question-counter{font-family:'Orbitron',monospace;color:var(--neon-orange)}
+.module-badge{background:rgba(0,212,255,0.2);border:1px solid var(--neon-blue);color:var(--neon-blue);padding:0.3rem 0.8rem;border-radius:20px;font-size:0.8rem;font-weight:700}
+
+.question-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:16px;padding:2rem;margin-bottom:1.5rem}
+.question-text{font-size:1.3rem;font-weight:700;line-height:1.5;color:var(--text);margin-bottom:1.5rem}
+
+.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.answer-btn{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid #1a3a5c;border-radius:12px;color:var(--text);padding:1rem;font-size:1rem;font-weight:600;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:0.75rem}
+.answer-btn:hover{border-color:var(--neon-orange);transform:translateY(-2px)}
+.answer-btn.correct{border-color:var(--neon-green);background:linear-gradient(135deg,rgba(0,255,136,0.12),var(--bg3))}
+.answer-btn.wrong{border-color:var(--neon-red);background:linear-gradient(135deg,rgba(255,34,68,0.12),var(--bg3))}
+.answer-letter{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--bg);border:1px solid #1a3a5c;border-radius:6px;font-family:'Orbitron',monospace;font-weight:900;font-size:0.8rem}
+
+.explanation{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none}
+.explanation.show{display:block}
+.explanation-label{color:var(--neon-blue);font-weight:700;margin-bottom:0.5rem}
+.explanation-text{color:var(--text-muted);line-height:1.5}
+
+.controls{display:flex;gap:1rem;justify-content:center}
+.btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.btn-primary{background:linear-gradient(135deg,var(--neon-orange),#ff9900);color:#000}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid #1a3a5c}
+.btn:hover{transform:translateY(-1px)}
+
+.results{text-align:center;display:none}
+.results-title{font-family:'Orbitron',monospace;font-size:2rem;color:var(--neon-green);margin-bottom:1rem}
+.score{font-size:1.5rem;margin-bottom:2rem}
+
+@media(max-width:768px){
+  .setup-grid,.answers-grid{grid-template-columns:1fr}
+  .question-header{flex-direction:column;gap:1rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <span class="logo-icon">⚙️</span>
+    <div class="logo">DevOps Quiz</div>
+    <div class="subtitle">◆ Formation SNDAK11 - Système d'Évaluation ◆</div>
+  </div>
+
+  <div class="quiz-setup" id="setup">
+    <div class="setup-title">Configuration du Quiz DevOps</div>
+    
+    <div class="connection-status">
+      <div class="status-title">📡 Status des Équipes</div>
+      <div class="teams-status">
+        <div class="team-status disconnected" id="team1Status">
+          <span class="status-icon">🔴</span>
+          <span>Équipe 1: Déconnectée</span>
+        </div>
+        <div class="team-status disconnected" id="team2Status">
+          <span class="status-icon">🔴</span>
+          <span>Équipe 2: Déconnectée</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="setup-grid">
+      <div class="setup-group">
+        <label class="setup-label">Module Spécifique</label>
+        <select class="setup-select" id="moduleSelect">
+          <option value="mixed">Mélange de tous les modules</option>
+          <option value="devops">DevOps - Module introductif</option>
+          <option value="docker">Docker - Conteneurisation</option>
+          <option value="jenkins">Jenkins - CI/CD</option>
+          <option value="sonarqube">SonarQube - Qualité du code</option>
+          <option value="kubernetes">Kubernetes - Orchestration</option>
+          <option value="terraform">Terraform - IaC</option>
+          <option value="prometheus">Prometheus/Grafana - Surveillance</option>
+          <option value="trivy">Trivy - Scan des ressources</option>
+          <option value="aidevops">IA pour DevOps - Assistance IA</option>
+        </select>
+      </div>
+      
+      <div class="setup-group">
+        <label class="setup-label">Nombre de Questions</label>
+        <select class="setup-select" id="questionCount">
+          <option value="10">10 questions</option>
+          <option value="15" selected>15 questions</option>
+          <option value="20">20 questions</option>
+          <option value="25">25 questions</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="module-info" id="moduleInfo">
+      <div class="module-title">Modules Disponibles</div>
+      <div class="module-list">DevOps, Docker, Jenkins, SonarQube, Kubernetes, Terraform, Prometheus/Grafana, Trivy, IA pour DevOps</div>
+    </div>
+
+    <div class="setup-grid">
+      <div class="setup-group">
+        <label class="setup-label">Mode de Quiz</label>
+        <select class="setup-select" id="quizMode">
+          <option value="evaluation">Évaluation (avec réponses)</option>
+          <option value="training">Entraînement (apprentissage)</option>
+          <option value="competition">Compétition (chronométré)</option>
+        </select>
+      </div>
+      
+      <div class="setup-group">
+        <label class="setup-label">Temps par Question</label>
+        <select class="setup-select" id="timePerQuestion">
+          <option value="20">20 secondes</option>
+          <option value="30" selected>30 secondes</option>
+          <option value="45">45 secondes</option>
+          <option value="60">60 secondes</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn" onclick="startQuiz()" disabled>
+      🎯 EN ATTENTE DES ÉQUIPES...
+    </button>
+  </div>
+
+  <div class="quiz-area" id="quizArea">
+    <div class="question-header">
+      <div class="question-counter" id="questionCounter">Question 1 / 15</div>
+      <div class="module-badge" id="moduleBadge">DevOps</div>
+    </div>
+
+    <div class="question-box">
+      <div class="question-text" id="questionText">Chargement de la question...</div>
+    </div>
+
+    <div class="answers-grid" id="answersGrid">
+      <button class="answer-btn" onclick="selectAnswer(0)">
+        <span class="answer-letter">A</span>
+        <span class="answer-text" id="answerA">Réponse A</span>
+      </button>
+      <button class="answer-btn" onclick="selectAnswer(1)">
+        <span class="answer-letter">B</span>
+        <span class="answer-text" id="answerB">Réponse B</span>
+      </button>
+      <button class="answer-btn" onclick="selectAnswer(2)">
+        <span class="answer-letter">C</span>
+        <span class="answer-text" id="answerC">Réponse C</span>
+      </button>
+      <button class="answer-btn" onclick="selectAnswer(3)">
+        <span class="answer-letter">D</span>
+        <span class="answer-text" id="answerD">Réponse D</span>
+      </button>
+    </div>
+
+    <div class="explanation" id="explanation">
+      <div class="explanation-label">💡 Explication</div>
+      <div class="explanation-text" id="explanationText">Explication de la réponse...</div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="showAnswer()">Afficher la Réponse</button>
+      <button class="btn btn-primary" onclick="nextQuestion()">Question Suivante</button>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="results-title">🏆 Quiz Terminé !</div>
+    <div class="score" id="finalScore">Score: 0/15</div>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="resetQuiz()">Nouveau Quiz</button>
+      <button class="btn btn-primary" onclick="showSummary()">Voir le Résumé</button>
+    </div>
+  </div>
+</div>
+
+<script src="questions-devops.js"></script>
+<script>
+// Variables pour le quiz DevOps multi-équipes
+let ws = null;
+let team1Connected = false;
+let team2Connected = false;
+let currentQuiz = {
+  questions: [],
+  currentIndex: 0,
+  score: 0,
+  answered: false
+};
+
+// Connexion WebSocket
+function connect() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host;
+  ws = new WebSocket(protocol + '//' + host);
+  
+  ws.onopen = () => {
+    console.log('DevOps Quiz - Connecté au serveur');
+    ws.send(JSON.stringify({type: 'registerHost'}));
+  };
+  
+  ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    handleMessage(data);
+  };
+  
+  ws.onclose = () => {
+    console.log('DevOps Quiz - Déconnecté du serveur');
+    setTimeout(connect, 2000);
+  };
+  
+  ws.onerror = (err) => {
+    console.error('DevOps Quiz - Erreur WebSocket:', err);
+  };
+}
+
+function handleMessage(data) {
+  switch(data.type) {
+    case 'registered':
+      console.log('DevOps Quiz - Animateur enregistré');
+      break;
+    case 'teamConnected':
+      console.log('DevOps Quiz - Équipe ' + data.team + ' connectée');
+      updateTeamConnection(data.team, true);
+      break;
+    case 'teamDisconnected':
+      console.log('DevOps Quiz - Équipe ' + data.team + ' déconnectée');
+      updateTeamConnection(data.team, false);
+      break;
+  }
+}
+
+function updateTeamConnection(teamNum, connected) {
+  const statusElement = document.getElementById(`team${teamNum}Status`);
+  const icon = statusElement.querySelector('.status-icon');
+  
+  if (connected) {
+    statusElement.className = 'team-status connected';
+    icon.textContent = '🟢';
+    statusElement.innerHTML = '<span class="status-icon">🟢</span><span>Équipe ' + teamNum + ': Connectée</span>';
+    
+    if (teamNum === 1) team1Connected = true;
+    if (teamNum === 2) team2Connected = true;
+  } else {
+    statusElement.className = 'team-status disconnected';
+    icon.textContent = '🔴';
+    statusElement.innerHTML = '<span class="status-icon">🔴</span><span>Équipe ' + teamNum + ': Déconnectée</span>';
+    
+    if (teamNum === 1) team1Connected = false;
+    if (teamNum === 2) team2Connected = false;
+  }
+  
+  updateStartButton();
+}
+
+function updateStartButton() {
+  const startBtn = document.getElementById('startBtn');
+  
+  if (team1Connected && team2Connected) {
+    startBtn.disabled = false;
+    startBtn.textContent = '🎯 LANCER LE QUIZ DEVOPS';
+    startBtn.style.opacity = '1';
+  } else {
+    startBtn.disabled = true;
+    startBtn.textContent = '🎯 EN ATTENTE DES ÉQUIPES...';
+    startBtn.style.opacity = '0.5';
+  }
+}
+
+function startQuiz() {
+  // Vérifier que les deux équipes sont connectées
+  if (!team1Connected || !team2Connected) {
+    alert('❌ Les deux équipes doivent être connectées avant de lancer le quiz DevOps !');
+    return;
+  }
+  
+  const module = document.getElementById('moduleSelect').value;
+  const questionCount = parseInt(document.getElementById('questionCount').value);
+  const mode = document.getElementById('quizMode').value;
+  const timePerQuestion = parseInt(document.getElementById('timePerQuestion').value);
+  
+  console.log('🚀 Démarrage du quiz DevOps:', { module, questionCount, mode, timePerQuestion });
+  
+  // Sélectionner les questions selon le module
+  let questionPool = [];
+  
+  if (typeof QUESTIONS_DEVOPS === 'undefined') {
+    alert('❌ Erreur: Questions DevOps non chargées. Rechargez la page.');
+    return;
+  }
+  
+  if (module === 'mixed') {
+    questionPool = QUESTIONS_DEVOPS;
+  } else {
+    questionPool = QUESTIONS_DEVOPS.filter(q => q.module === module);
+  }
+  
+  if (questionPool.length === 0) {
+    alert('❌ Aucune question trouvée pour ce module.');
+    return;
+  }
+  
+  // Mélanger et sélectionner les questions
+  currentQuiz.questions = shuffleArray(questionPool).slice(0, questionCount);
+  currentQuiz.currentIndex = 0;
+  currentQuiz.score = 0;
+  
+  // Envoyer au serveur pour démarrer le quiz multi-équipes
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'startGame',
+      team1Name: 'Équipe 1',
+      team2Name: 'Équipe 2',
+      totalQuestions: questionCount,
+      timePerQuestion: timePerQuestion,
+      quizType: 'devops',
+      module: module,
+      mode: mode
+    }));
+  }
+  
+  // Masquer la configuration et afficher le quiz
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('quizArea').style.display = 'block';
+  
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (currentQuiz.currentIndex >= currentQuiz.questions.length) {
+    showResults();
+    return;
+  }
+  
+  const question = currentQuiz.questions[currentQuiz.currentIndex];
+  
+  document.getElementById('questionCounter').textContent = 
+    `Question ${currentQuiz.currentIndex + 1} / ${currentQuiz.questions.length}`;
+  document.getElementById('moduleBadge').textContent = question.module || 'DevOps';
+  document.getElementById('questionText').textContent = question.q;
+  
+  // Afficher les réponses
+  const answers = ['answerA', 'answerB', 'answerC', 'answerD'];
+  answers.forEach((id, index) => {
+    document.getElementById(id).textContent = question.a[index];
+  });
+  
+  // Réinitialiser les boutons
+  document.querySelectorAll('.answer-btn').forEach(btn => {
+    btn.classList.remove('correct', 'wrong');
+    btn.disabled = false;
+  });
+  
+  document.getElementById('explanation').classList.remove('show');
+  currentQuiz.answered = false;
+}
+
+function selectAnswer(answerIndex) {
+  if (currentQuiz.answered) return;
+  
+  const question = currentQuiz.questions[currentQuiz.currentIndex];
+  const correct = answerIndex === question.r;
+  
+  // Marquer la réponse
+  const selectedBtn = document.querySelectorAll('.answer-btn')[answerIndex];
+  const correctBtn = document.querySelectorAll('.answer-btn')[question.r];
+  
+  selectedBtn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    correctBtn.classList.add('correct');
+  }
+  
+  // Désactiver tous les boutons
+  document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+  
+  if (correct) {
+    currentQuiz.score++;
+  }
+  
+  currentQuiz.answered = true;
+  
+  // Afficher l'explication
+  document.getElementById('explanationText').textContent = question.e || 'Pas d\'explication disponible.';
+  document.getElementById('explanation').classList.add('show');
+}
+
+function showAnswer() {
+  if (currentQuiz.answered) return;
+  
+  const question = currentQuiz.questions[currentQuiz.currentIndex];
+  const correctBtn = document.querySelectorAll('.answer-btn')[question.r];
+  
+  correctBtn.classList.add('correct');
+  document.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+  
+  document.getElementById('explanationText').textContent = question.e || 'Pas d\'explication disponible.';
+  document.getElementById('explanation').classList.add('show');
+  
+  currentQuiz.answered = true;
+}
+
+function nextQuestion() {
+  currentQuiz.currentIndex++;
+  loadQuestion();
+}
+
+function showResults() {
+  document.getElementById('quizArea').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  
+  const percentage = Math.round((currentQuiz.score / currentQuiz.questions.length) * 100);
+  document.getElementById('finalScore').textContent = 
+    `Score: ${currentQuiz.score}/${currentQuiz.questions.length} (${percentage}%)`;
+}
+
+function resetQuiz() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('setup').style.display = 'block';
+  currentQuiz = { questions: [], currentIndex: 0, score: 0, answered: false };
+}
+
+function showSummary() {
+  alert('Fonctionnalité de résumé à implémenter');
+}
+
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Démarrer la connexion WebSocket
+connect();
+</script>
+</body>
+</html>
+    moduleList.textContent = 'DevOps, Docker, Jenkins, SonarQube, Kubernetes, Terraform, Prometheus/Grafana, Trivy, IA pour DevOps';
+  } else {
+    const groupModules = {
+      1: 'Docker, Kubernetes, Prometheus/Grafana',
+      2: 'Jenkins, Kubernetes, Trivy', 
+      3: 'DevOps, Jenkins, Terraform',
+      4: 'DevOps, SonarQube, Terraform, IA pour DevOps',
+      5: 'Docker, SonarQube, Prometheus/Grafana, IA pour DevOps'
+    };
+    moduleTitle.textContent = `Modules pour le Groupe ${group}`;
+    moduleList.textContent = groupModules[group] || 'Modules non définis';
+  }
+});
+
+function startQuiz() {
+  const group = document.getElementById('groupSelect').value;
+  const module = document.getElementById('moduleSelect').value;
+  const count = parseInt(document.getElementById('questionCount').value);
+  
+  // Sélectionner les questions selon la configuration
+  let questionPool = [];
+  
+  if (group === 'all') {
+    if (module === 'mixed') {
+      questionPool = getAllDevOpsQuestions();
+    } else {
+      questionPool = getQuestionsByModule(module);
+    }
+  } else {
+    if (module === 'mixed') {
+      questionPool = getQuestionsForGroup(parseInt(group));
+    } else {
+      // Vérifier si le module appartient au groupe
+      const groupModules = getModulesForGroup(parseInt(group));
+      if (groupModules.includes(module)) {
+        questionPool = getQuestionsByModule(module);
+      } else {
+        alert('Ce module ne fait pas partie du groupe sélectionné !');
+        return;
+      }
+    }
+  }
+  
+  if (questionPool.length === 0) {
+    alert('Aucune question disponible pour cette configuration !');
+    return;
+  }
+  
+  // Mélanger et sélectionner les questions
+  currentQuiz.questions = shuffleArray([...questionPool]).slice(0, Math.min(count, questionPool.length));
+  currentQuiz.currentIndex = 0;
+  currentQuiz.score = 0;
+  currentQuiz.answered = false;
+  
+  // Afficher la zone de quiz
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('quizArea').style.display = 'block';
+  
+  loadQuestion();
+}
+
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function loadQuestion() {
+  if (currentQuiz.currentIndex >= currentQuiz.questions.length) {
+    showResults();
+    return;
+  }
+  
+  const question = currentQuiz.questions[currentQuiz.currentIndex];
+  currentQuiz.answered = false;
+  
+  // Mettre à jour l'interface
+  document.getElementById('questionCounter').textContent = 
+    `Question ${currentQuiz.currentIndex + 1} / ${currentQuiz.questions.length}`;
+  document.getElementById('moduleBadge').textContent = question.c;
+  document.getElementById('questionText').textContent = question.q;
+  
+  // Mélanger les réponses
+  const answers = [...question.a];
+  const correctIndex = question.r;
+  const shuffledIndices = [0, 1, 2, 3];
+  
+  // Mélanger les indices
+  for (let i = shuffledIndices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledIndices[i], shuffledIndices[j]] = [shuffledIndices[j], shuffledIndices[i]];
+  }
+  
+  // Trouver le nouvel index de la bonne réponse
+  question.shuffledCorrectIndex = shuffledIndices.indexOf(correctIndex);
+  
+  // Afficher les réponses mélangées
+  const answerElements = ['answerA', 'answerB', 'answerC', 'answerD'];
+  answerElements.forEach((id, index) => {
+    document.getElementById(id).textContent = answers[shuffledIndices[index]];
+  });
+  
+  // Réinitialiser l'apparence des boutons
+  document.querySelectorAll('.answer-btn').forEach(btn => {
+    btn.className = 'answer-btn';
+  });
+  
+  // Masquer l'explication
+  document.getElementById('explanation').classList.remove('show');
+}
+
+function selectAnswer(selectedIndex) {
+  if (currentQuiz.answered) return;
+  
+  const question = currentQuiz.questions[currentQuiz.currentIndex];
+  const isCorrect = selectedIndex === question.shuffledCorrectIndex;
+  
+  currentQuiz.answered = true;
+  
+  if (isCorrect) {
+    currentQuiz.score++;
+  }
+  
+  // Marquer les réponses
+  document.querySelectorAll('.answer-btn').forEach((btn, index) => {
+    if (index === question.shuffledCorrectIndex) {
+      btn.classList.add('correct');
+    } else if (index === selectedIndex && !isCorrect) {
+      btn.classList.add('wrong');
+    }
+  });
+  
+  // Afficher l'explication
+  document.getElementById('explanationText').textContent = question.e;
+  document.getElementById('explanation').classList.add('show');
+}
+
+function showAnswer() {
+  if (currentQuiz.answered) return;
+  
+  const question = currentQuiz.questions[currentQuiz.currentIndex];
+  
+  // Marquer la bonne réponse
+  document.querySelectorAll('.answer-btn').forEach((btn, index) => {
+    if (index === question.shuffledCorrectIndex) {
+      btn.classList.add('correct');
+    }
+  });
+  
+  // Afficher l'explication
+  document.getElementById('explanationText').textContent = question.e;
+  document.getElementById('explanation').classList.add('show');
+  
+  currentQuiz.answered = true;
+}
+
+function nextQuestion() {
+  currentQuiz.currentIndex++;
+  loadQuestion();
+}
+
+function showResults() {
+  document.getElementById('quizArea').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  
+  const percentage = Math.round((currentQuiz.score / currentQuiz.questions.length) * 100);
+  document.getElementById('finalScore').textContent = 
+    `Score: ${currentQuiz.score}/${currentQuiz.questions.length} (${percentage}%)`;
+}
+
+function resetQuiz() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('setup').style.display = 'block';
+}
+
+function showSummary() {
+  alert(`Résumé du Quiz DevOps:\n\nScore: ${currentQuiz.score}/${currentQuiz.questions.length}\nPourcentage: ${Math.round((currentQuiz.score / currentQuiz.questions.length) * 100)}%\n\nModules couverts selon la configuration sélectionnée.`);
+}
+</script>
+</body>
+</html>
